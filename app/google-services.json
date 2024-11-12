@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "326761229330",
+    "project_id": "mobiledev2024-7b7ba",
+    "storage_bucket": "mobiledev2024-7b7ba.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:326761229330:android:e5b66406276c1a8b813ccb",
+        "android_client_info": {
+          "package_name": "com.example.rentapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBkzYw-JFY8rddBT5cCCUGbU9IlbRyvZxI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
