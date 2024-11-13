@@ -60,23 +60,7 @@ class LoginActivity : AppCompatActivity() {
         }
 
         registerButton.setOnClickListener {
-            val email = emailInput.text.toString()
-            val password = passwordInput.text.toString()
-
-            if (email.isEmpty() || password.isEmpty()) {
-                Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-
-            auth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this) { task ->
-                    if (task.isSuccessful) {
-                        startHomeActivity()
-                    } else {
-                        Toast.makeText(this, "Registration failed: ${task.exception?.message}",
-                            Toast.LENGTH_SHORT).show()
-                    }
-                }
+            startActivity(Intent(this, RegisterActivity::class.java))
         }
 
         forgotPassword.setOnClickListener {
