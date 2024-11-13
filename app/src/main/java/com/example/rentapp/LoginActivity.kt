@@ -1,10 +1,15 @@
 package com.example.rentapp
 
+import android.content.Intent
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 
 class LoginActivity : AppCompatActivity() {
     private lateinit var emailInput: EditText
@@ -12,10 +17,14 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var loginButton: Button
     private lateinit var registerButton: Button
     private lateinit var forgotPassword: TextView
+    private lateinit var auth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
+
+        // Initialize Firebase Auth
+        auth = Firebase.auth
 
         // Initialize views
         emailInput = findViewById(R.id.emailInput)
@@ -24,22 +33,74 @@ class LoginActivity : AppCompatActivity() {
         registerButton = findViewById(R.id.registerButton)
         forgotPassword = findViewById(R.id.forgotPassword)
 
-        // Set click listeners
+        // Check if user is already signed in
+        val currentUser = auth.currentUser
+        if (currentUser != null) {
+            startHomeActivity()
+        }
+
         loginButton.setOnClickListener {
-            // Handle login
             val email = emailInput.text.toString()
             val password = passwordInput.text.toString()
-            // Implement your login logic here
+
+            if (email.isEmpty() || password.isEmpty()) {
+                Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            auth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this) { task ->
+                    if (task.isSuccessful) {
+                        startHomeActivity()
+                    } else {
+                        Toast.makeText(this, "Authentication failed: ${task.exception?.message}",
+                            Toast.LENGTH_SHORT).show()
+                    }
+                }
         }
 
         registerButton.setOnClickListener {
-            // Handle registration navigation
-            // Implement your registration navigation here
+            val email = emailInput.text.toString()
+            val password = passwordInput.text.toString()
+
+            if (email.isEmpty() || password.isEmpty()) {
+                Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            auth.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this) { task ->
+                    if (task.isSuccessful) {
+                        startHomeActivity()
+                    } else {
+                        Toast.makeText(this, "Registration failed: ${task.exception?.message}",
+                            Toast.LENGTH_SHORT).show()
+                    }
+                }
         }
 
         forgotPassword.setOnClickListener {
-            // Handle forgot password
-            // Implement your forgot password logic here
+            val email = emailInput.text.toString()
+            if (email.isEmpty()) {
+                Toast.makeText(this, "Please enter your email", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            auth.sendPasswordResetEmail(email)
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        Toast.makeText(this, "Password reset email sent", Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(this, "Failed to send reset email: ${task.exception?.message}",
+                            Toast.LENGTH_SHORT).show()
+                    }
+                }
         }
+    }
+
+    private fun startHomeActivity() {
+        val intent = Intent(this, HomeActivity::class.java)
+        startActivity(intent)
+        finish()
     }
 } 
