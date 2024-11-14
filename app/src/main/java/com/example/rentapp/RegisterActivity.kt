@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import android.text.method.PasswordTransformationMethod
 
 class RegisterActivity : AppCompatActivity() {
     private lateinit var emailInput: EditText
@@ -18,6 +19,7 @@ class RegisterActivity : AppCompatActivity() {
     private lateinit var registerButton: Button
     private lateinit var backButton: ImageButton
     private lateinit var auth: FirebaseAuth
+    private lateinit var togglePassword: ImageButton
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,6 +65,20 @@ class RegisterActivity : AppCompatActivity() {
                             Toast.LENGTH_SHORT).show()
                     }
                 }
+        }
+
+        togglePassword = findViewById(R.id.togglePassword)
+
+        togglePassword.setOnClickListener {
+            val isPasswordVisible = passwordInput.transformationMethod == null
+            passwordInput.transformationMethod = if (isPasswordVisible) {
+                togglePassword.setImageResource(R.drawable.ic_eye_off)
+                PasswordTransformationMethod.getInstance()
+            } else {
+                togglePassword.setImageResource(R.drawable.ic_eye)
+                null
+            }
+            passwordInput.setSelection(passwordInput.text.length)
         }
     }
 } 
