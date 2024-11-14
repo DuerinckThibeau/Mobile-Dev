@@ -61,6 +61,7 @@ class HomeActivity : AppCompatActivity() {
                     true
                 }
                 R.id.navigation_list -> {
+                    startActivity(Intent(this, ListActivity::class.java))
                     true
                 }
                 R.id.navigation_profile -> {
