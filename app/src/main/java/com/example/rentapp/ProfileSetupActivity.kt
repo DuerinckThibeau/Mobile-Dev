@@ -39,30 +39,38 @@ class ProfileSetupActivity : AppCompatActivity() {
         confirmButton = findViewById(R.id.confirmButton)
 
         confirmButton.setOnClickListener {
-            val userId = auth.currentUser?.uid
-            if (userId == null) {
-                Toast.makeText(this, "No user found", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
+            saveUserProfile()
+        }
+    }
 
-            val userProfile = hashMapOf(
-                "firstName" to firstNameInput.text.toString(),
-                "lastName" to lastNameInput.text.toString(),
-                "phone" to phoneInput.text.toString(),
-                "street" to streetInput.text.toString(),
-                "number" to numberInput.text.toString(),
-                "zipCode" to zipCodeInput.text.toString(),
-                "city" to cityInput.text.toString()
+    private fun saveUserProfile() {
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        currentUser?.let { user ->
+            // Create address object
+            val address = hashMapOf(
+                "city" to cityInput.text.toString(),
+                "housenumber" to numberInput.text.toString(),
+                "streetname" to streetInput.text.toString(),
+                "zipcode" to zipCodeInput.text.toString()
             )
 
-            db.collection("users").document(userId)
+            // Create user profile with nested address object
+            val userProfile = hashMapOf(
+                "address" to address,
+                "email" to user.email,  // Get email from Firebase Auth
+                "firstname" to firstNameInput.text.toString(),
+                "lastname" to lastNameInput.text.toString(),
+                "profilepicture" to ""  // Empty string for now, can be updated when implementing image upload
+            )
+
+            db.collection("users").document(user.uid)
                 .set(userProfile)
                 .addOnSuccessListener {
                     startActivity(Intent(this, HomeActivity::class.java))
                     finish()
                 }
                 .addOnFailureListener { e ->
-                    Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_LONG).show()
                 }
         }
     }
