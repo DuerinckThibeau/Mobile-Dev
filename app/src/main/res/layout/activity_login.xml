@@ -45,7 +45,7 @@
             android:layout_height="24dp"
             android:layout_gravity="center_vertical"
             android:layout_marginStart="12dp"
-            android:src="@drawable/icons_ic_email"
+            android:src="@drawable/ic_email"
             android:alpha="0.5" />
     </FrameLayout>
 
@@ -77,7 +77,7 @@
             android:layout_height="24dp"
             android:layout_gravity="center_vertical"
             android:layout_marginStart="12dp"
-            android:src="@drawable/icons_ic_lock"
+            android:src="@drawable/ic_lock"
             android:alpha="0.5" />
 
         <ImageButton
@@ -86,7 +86,7 @@
             android:layout_height="48dp"
             android:layout_gravity="end|center_vertical"
             android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/icons_ic_eye_off"
+            android:src="@drawable/ic_eye_off"
             android:alpha="0.5" />
     </FrameLayout>
 
