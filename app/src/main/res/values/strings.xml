@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">RentApp</string>
+    <string name="app_name">Rentify</string>
     <string-array name="categories_array">
         <item>Category</item>
         <item>Electronics</item>
