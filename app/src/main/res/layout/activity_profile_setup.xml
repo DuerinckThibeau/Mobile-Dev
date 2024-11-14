@@ -37,7 +37,7 @@
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_gravity="end|bottom"
-            android:src="@drawable/ic_add"
+            android:src="@drawable/icons_ic_add"
             android:background="@drawable/circle_white_background"
             android:padding="4dp"
             android:tint="#262626"/>
@@ -90,7 +90,7 @@
                     android:layout_height="24dp"
                     android:layout_gravity="center_vertical"
                     android:layout_marginStart="12dp"
-                    android:src="@drawable/ic_person"
+                    android:src="@drawable/icons_ic_person"
                     android:alpha="0.5" />
             </FrameLayout>
 
@@ -116,7 +116,7 @@
                     android:layout_height="24dp"
                     android:layout_gravity="center_vertical"
                     android:layout_marginStart="12dp"
-                    android:src="@drawable/ic_person"
+                    android:src="@drawable/icons_ic_person"
                     android:alpha="0.5" />
             </FrameLayout>
         </LinearLayout>
@@ -143,7 +143,7 @@
                 android:layout_height="24dp"
                 android:layout_gravity="center_vertical"
                 android:layout_marginStart="12dp"
-                android:src="@drawable/ic_phone"
+                android:src="@drawable/icons_ic_phone"
                 android:alpha="0.5" />
         </FrameLayout>
 
@@ -175,7 +175,7 @@
                     android:layout_height="24dp"
                     android:layout_gravity="center_vertical"
                     android:layout_marginStart="12dp"
-                    android:src="@drawable/ic_location"
+                    android:src="@drawable/icons_ic_location"
                     android:alpha="0.5" />
             </FrameLayout>
 
@@ -228,7 +228,7 @@
                     android:layout_height="24dp"
                     android:layout_gravity="center_vertical"
                     android:layout_marginStart="12dp"
-                    android:src="@drawable/ic_location"
+                    android:src="@drawable/icons_ic_location"
                     android:alpha="0.5" />
             </FrameLayout>
 
@@ -254,7 +254,7 @@
                     android:layout_height="24dp"
                     android:layout_gravity="center_vertical"
                     android:layout_marginStart="12dp"
-                    android:src="@drawable/ic_location"
+                    android:src="@drawable/icons_ic_location"
                     android:alpha="0.5" />
             </FrameLayout>
         </LinearLayout>
