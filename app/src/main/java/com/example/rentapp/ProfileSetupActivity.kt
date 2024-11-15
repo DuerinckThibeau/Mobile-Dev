@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.example.rentapp.utils.GeocodingUtil
 
 class ProfileSetupActivity : AppCompatActivity() {
     private lateinit var firstNameInput: EditText
@@ -28,7 +29,6 @@ class ProfileSetupActivity : AppCompatActivity() {
         auth = FirebaseAuth.getInstance()
         db = FirebaseFirestore.getInstance()
 
-        // Initialize views
         firstNameInput = findViewById(R.id.firstNameInput)
         lastNameInput = findViewById(R.id.lastNameInput)
         phoneInput = findViewById(R.id.phoneInput)
@@ -39,30 +39,46 @@ class ProfileSetupActivity : AppCompatActivity() {
         confirmButton = findViewById(R.id.confirmButton)
 
         confirmButton.setOnClickListener {
-            val userId = auth.currentUser?.uid
-            if (userId == null) {
-                Toast.makeText(this, "No user found", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
+            saveUserProfile()
+        }
+    }
 
-            val userProfile = hashMapOf(
-                "firstName" to firstNameInput.text.toString(),
-                "lastName" to lastNameInput.text.toString(),
-                "phone" to phoneInput.text.toString(),
-                "street" to streetInput.text.toString(),
-                "number" to numberInput.text.toString(),
-                "zipCode" to zipCodeInput.text.toString(),
-                "city" to cityInput.text.toString()
+    private fun saveUserProfile() {
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        currentUser?.let { user ->
+            val street = streetInput.text.toString()
+            val city = cityInput.text.toString()
+            
+            val geoPoint = GeocodingUtil.getGeoPointFromAddress(
+                this,
+                street,
+                city
             )
 
-            db.collection("users").document(userId)
+            val address = hashMapOf(
+                "city" to city,
+                "housenumber" to numberInput.text.toString(),
+                "streetname" to street,
+                "zipcode" to zipCodeInput.text.toString(),
+                "geopoint" to geoPoint
+            )
+
+            val userProfile = hashMapOf(
+                "address" to address,
+                "email" to user.email, 
+                "firstname" to firstNameInput.text.toString(),
+                "lastname" to lastNameInput.text.toString(),
+                "profilepicture" to ""
+            )
+
+            db.collection("users").document(user.uid)
                 .set(userProfile)
                 .addOnSuccessListener {
                     startActivity(Intent(this, HomeActivity::class.java))
                     finish()
                 }
                 .addOnFailureListener { e ->
-                    Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_LONG).show()
                 }
         }
     }
