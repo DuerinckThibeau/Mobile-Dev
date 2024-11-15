@@ -151,6 +151,7 @@ class AddItemActivity : AppCompatActivity() {
                 if (document != null) {
                     val firstName = document.getString("firstname") ?: ""
                     val lastName = document.getString("lastname") ?: ""
+                    val profilePicture = document.getString("profilepicture") ?: ""
                     
                     val address = document.get("address") as? Map<String, Any>
                     val street = address?.get("streetname") as? String ?: ""
@@ -159,8 +160,9 @@ class AddItemActivity : AppCompatActivity() {
                     val item = hashMapOf(
                         "category" to category,
                         "createdBy" to "$firstName $lastName",
+                        "createdByProfilePic" to profilePicture,
                         "description" to description,
-                        "imageUrl" to "", // Empty string for now
+                        "imageUrl" to "", 
                         "location" to hashMapOf(
                             "street" to "$street",
                             "city" to city

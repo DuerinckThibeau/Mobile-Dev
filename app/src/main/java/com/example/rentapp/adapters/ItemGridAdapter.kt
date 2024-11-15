@@ -18,6 +18,7 @@ class ItemGridAdapter(private val items: List<Item>) :
         val itemTitle: TextView = view.findViewById(R.id.itemTitle)
         val itemDescription: TextView = view.findViewById(R.id.itemDescription)
         val userName: TextView = view.findViewById(R.id.userName)
+        val userImage: ImageView = view.findViewById(R.id.userImage)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
@@ -39,6 +40,15 @@ class ItemGridAdapter(private val items: List<Item>) :
                 .into(holder.itemImage)
         } else {
             holder.itemImage.setImageResource(R.drawable.ic_image_placeholder)
+        }
+
+        if (item.createdByProfilePic.isNotEmpty()) {
+            Glide.with(holder.userImage.context)
+                .load(item.createdByProfilePic)
+                .placeholder(R.drawable.ic_person)
+                .into(holder.userImage)
+        } else {
+            holder.userImage.setImageResource(R.drawable.ic_person)
         }
     }
 
