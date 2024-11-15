@@ -12,6 +12,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.example.rentapp.models.Item
 import com.example.rentapp.adapters.ItemGridAdapter
 import com.example.rentapp.FilterBottomSheet
+import com.google.firebase.firestore.GeoPoint
 
 class ListActivity : AppCompatActivity(), FilterBottomSheet.FilterListener {
     private lateinit var recyclerView: RecyclerView
@@ -82,7 +83,7 @@ class ListActivity : AppCompatActivity(), FilterBottomSheet.FilterListener {
         filterSheet?.show(supportFragmentManager, "FilterBottomSheet")
     }
 
-    override fun onFilterChanged(search: String, category: String, location: String) {
+    override fun onFilterChanged(search: String, category: String, location: String, radiusKm: Int) {
         var filteredItems = allItems
 
         if (search.isNotEmpty()) {
@@ -103,6 +104,34 @@ class ListActivity : AppCompatActivity(), FilterBottomSheet.FilterListener {
             }
         }
 
+        if (radiusKm > 0) {
+            filteredItems = filteredItems.filter { item ->
+                val itemLocation = item.location
+                val geoPoint = itemLocation["geopoint"] as? GeoPoint
+                
+                if (geoPoint != null) {
+                    val distance = calculateDistance(
+                        userLat = filterSheet?.getUserGeoPoint()?.latitude ?: 0.0,
+                        userLng = filterSheet?.getUserGeoPoint()?.longitude ?: 0.0,
+                        itemLat = geoPoint.latitude,
+                        itemLng = geoPoint.longitude
+                    )
+                    distance <= radiusKm
+                } else false
+            }
+        }
+
         recyclerView.adapter = ItemGridAdapter(filteredItems)
+    }
+
+    private fun calculateDistance(userLat: Double, userLng: Double, itemLat: Double, itemLng: Double): Int {
+        val r = 6371 // Earth's radius in km
+        val dLat = Math.toRadians(itemLat - userLat)
+        val dLng = Math.toRadians(itemLng - userLng)
+        val a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.cos(Math.toRadians(userLat)) * Math.cos(Math.toRadians(itemLat)) *
+                Math.sin(dLng/2) * Math.sin(dLng/2)
+        val c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a))
+        return (r * c).toInt()
     }
 } 

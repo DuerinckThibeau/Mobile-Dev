@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.example.rentapp.utils.GeocodingUtil
 
 class ProfileSetupActivity : AppCompatActivity() {
     private lateinit var firstNameInput: EditText
@@ -28,7 +29,6 @@ class ProfileSetupActivity : AppCompatActivity() {
         auth = FirebaseAuth.getInstance()
         db = FirebaseFirestore.getInstance()
 
-        // Initialize views
         firstNameInput = findViewById(R.id.firstNameInput)
         lastNameInput = findViewById(R.id.lastNameInput)
         phoneInput = findViewById(R.id.phoneInput)
@@ -46,21 +46,29 @@ class ProfileSetupActivity : AppCompatActivity() {
     private fun saveUserProfile() {
         val currentUser = FirebaseAuth.getInstance().currentUser
         currentUser?.let { user ->
-            // Create address object
-            val address = hashMapOf(
-                "city" to cityInput.text.toString(),
-                "housenumber" to numberInput.text.toString(),
-                "streetname" to streetInput.text.toString(),
-                "zipcode" to zipCodeInput.text.toString()
+            val street = streetInput.text.toString()
+            val city = cityInput.text.toString()
+            
+            val geoPoint = GeocodingUtil.getGeoPointFromAddress(
+                this,
+                street,
+                city
             )
 
-            // Create user profile with nested address object
+            val address = hashMapOf(
+                "city" to city,
+                "housenumber" to numberInput.text.toString(),
+                "streetname" to street,
+                "zipcode" to zipCodeInput.text.toString(),
+                "geopoint" to geoPoint
+            )
+
             val userProfile = hashMapOf(
                 "address" to address,
-                "email" to user.email,  // Get email from Firebase Auth
+                "email" to user.email, 
                 "firstname" to firstNameInput.text.toString(),
                 "lastname" to lastNameInput.text.toString(),
-                "profilepicture" to ""  // Empty string for now, can be updated when implementing image upload
+                "profilepicture" to ""
             )
 
             db.collection("users").document(user.uid)

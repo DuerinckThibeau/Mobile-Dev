@@ -9,5 +9,5 @@ data class Item(
     val imageUrl: String = "",
     val price: Double = 0.0,
     val category: String = "",
-    val location: Map<String, String> = mapOf()
+    val location: Map<String, Any> = mapOf()
 ) 

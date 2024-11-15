@@ -21,6 +21,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import android.widget.FrameLayout
 import android.widget.ImageView
+import com.example.rentapp.utils.GeocodingUtil
 
 class AddItemActivity : AppCompatActivity() {
     private lateinit var priceInput: EditText
@@ -157,6 +158,12 @@ class AddItemActivity : AppCompatActivity() {
                     val street = address?.get("streetname") as? String ?: ""
                     val city = address?.get("city") as? String ?: ""
                     
+                    val geoPoint = GeocodingUtil.getGeoPointFromAddress(
+                        this,
+                        street,
+                        city
+                    )
+
                     val item = hashMapOf(
                         "category" to category,
                         "createdBy" to "$firstName $lastName",
@@ -164,8 +171,9 @@ class AddItemActivity : AppCompatActivity() {
                         "description" to description,
                         "imageUrl" to "", 
                         "location" to hashMapOf(
-                            "street" to "$street",
-                            "city" to city
+                            "street" to street,
+                            "city" to city,
+                            "geopoint" to geoPoint
                         ),
                         "price" to price.toDouble(),
                         "title" to title
