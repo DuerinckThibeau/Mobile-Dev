@@ -8,5 +8,6 @@ data class Item(
     val createdByProfilePic: String = "",
     val imageUrl: String = "",
     val price: Double = 0.0,
-    val category: String = ""
+    val category: String = "",
+    val location: Map<String, String> = mapOf()
 ) 

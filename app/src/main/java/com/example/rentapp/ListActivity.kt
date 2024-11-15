@@ -2,6 +2,7 @@ package com.example.rentapp
 
 import android.content.Intent
 import android.os.Bundle
+import android.widget.ImageButton
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -10,10 +11,13 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.firestore.FirebaseFirestore
 import com.example.rentapp.models.Item
 import com.example.rentapp.adapters.ItemGridAdapter
+import com.example.rentapp.FilterBottomSheet
 
-class ListActivity : AppCompatActivity() {
+class ListActivity : AppCompatActivity(), FilterBottomSheet.FilterListener {
     private lateinit var recyclerView: RecyclerView
     private lateinit var db: FirebaseFirestore
+    private var allItems = listOf<Item>()
+    private var filterSheet: FilterBottomSheet? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,6 +34,10 @@ class ListActivity : AppCompatActivity() {
         }
 
         setupBottomNavigation()
+
+        findViewById<ImageButton>(R.id.filterButton).setOnClickListener {
+            showFilterSheet()
+        }
     }
 
     override fun onResume() {
@@ -41,11 +49,11 @@ class ListActivity : AppCompatActivity() {
         db.collection("items")
             .get()
             .addOnSuccessListener { result ->
-                val items = result.toObjects(Item::class.java)
-                recyclerView.adapter = ItemGridAdapter(items)
+                allItems = result.toObjects(Item::class.java)
+                recyclerView.adapter = ItemGridAdapter(allItems)
             }
             .addOnFailureListener { exception ->
-                // Handle any errors
+                
             }
     }
 
@@ -65,5 +73,36 @@ class ListActivity : AppCompatActivity() {
             }
         }
         navView.selectedItemId = R.id.navigation_list
+    }
+
+    private fun showFilterSheet() {
+        filterSheet = FilterBottomSheet().apply {
+            setFilterListener(this@ListActivity)
+        }
+        filterSheet?.show(supportFragmentManager, "FilterBottomSheet")
+    }
+
+    override fun onFilterChanged(search: String, category: String, location: String) {
+        var filteredItems = allItems
+
+        if (search.isNotEmpty()) {
+            filteredItems = filteredItems.filter { 
+                it.title.contains(search, ignoreCase = true) 
+            }
+        }
+
+        if (category.isNotEmpty()) {
+            filteredItems = filteredItems.filter { 
+                it.category == category 
+            }
+        }
+
+        if (location.isNotEmpty()) {
+            filteredItems = filteredItems.filter { 
+                it.location["city"] == location 
+            }
+        }
+
+        recyclerView.adapter = ItemGridAdapter(filteredItems)
     }
 } 
