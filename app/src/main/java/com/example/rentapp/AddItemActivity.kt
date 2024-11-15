@@ -55,6 +55,10 @@ class AddItemActivity : AppCompatActivity() {
 
         setupCategorySpinner()
         setupConfirmButton()
+
+        findViewById<ImageButton>(R.id.backButton).setOnClickListener {
+            finish()
+        }
     }
 
     private fun openImagePicker() {
