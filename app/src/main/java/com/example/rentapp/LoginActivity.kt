@@ -13,6 +13,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import android.text.method.PasswordTransformationMethod
+import com.google.firebase.firestore.FirebaseFirestore
 
 class LoginActivity : AppCompatActivity() {
     private lateinit var emailInput: EditText
@@ -22,6 +23,7 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var forgotPassword: TextView
     private lateinit var auth: FirebaseAuth
     private lateinit var togglePassword: ImageButton
+    private lateinit var db: FirebaseFirestore
 
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
@@ -29,6 +31,7 @@ class LoginActivity : AppCompatActivity() {
         setContentView(R.layout.activity_login)
 
         auth = Firebase.auth
+        db = FirebaseFirestore.getInstance()
 
         emailInput = findViewById(R.id.emailInput)
         passwordInput = findViewById(R.id.passwordInput)
@@ -100,8 +103,27 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun startHomeActivity() {
-        val intent = Intent(this, HomeActivity::class.java)
-        startActivity(intent)
-        finish()
+        val currentUser = auth.currentUser
+        currentUser?.let { user ->
+            db.collection("users").document(user.uid)
+                .get()
+                .addOnSuccessListener { document ->
+                    if (document.exists()) {
+                        // User has completed profile setup, go to home
+                        val intent = Intent(this, HomeActivity::class.java)
+                        startActivity(intent)
+                        finish()
+                    } else {
+                        // User needs to complete profile setup
+                        val intent = Intent(this, ProfileSetupActivity::class.java)
+                        startActivity(intent)
+                        finish()
+                    }
+                }
+                .addOnFailureListener { e ->
+                    Toast.makeText(this, "Error checking user profile: ${e.message}", 
+                        Toast.LENGTH_SHORT).show()
+                }
+        }
     }
 } 
