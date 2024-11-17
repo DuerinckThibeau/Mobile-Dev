@@ -56,4 +56,7 @@ dependencies {
     implementation("androidx.core:core-splashscreen:1.0.1")
     implementation("com.google.android.gms:play-services-location:21.1.0")
     implementation ("com.google.maps.android:android-maps-utils:2.3.0")
+    implementation("org.osmdroid:osmdroid-android:6.1.16")
+    implementation("com.github.bumptech.glide:glide:4.12.0")
+    annotationProcessor("com.github.bumptech.glide:compiler:4.12.0")
 }
