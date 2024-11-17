@@ -25,15 +25,14 @@ class RegisterActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register)
 
-        // Initialize Firebase Auth
         auth = Firebase.auth
 
-        // Initialize views
         emailInput = findViewById(R.id.emailInput)
         passwordInput = findViewById(R.id.passwordInput)
         confirmPasswordInput = findViewById(R.id.confirmPasswordInput)
         registerButton = findViewById(R.id.registerButton)
         backButton = findViewById(R.id.backButton)
+        togglePassword = findViewById(R.id.togglePassword)
 
         backButton.setOnClickListener {
             finish()
@@ -67,18 +66,24 @@ class RegisterActivity : AppCompatActivity() {
                 }
         }
 
-        togglePassword = findViewById(R.id.togglePassword)
-
+        // Set up password visibility toggles
         togglePassword.setOnClickListener {
             val isPasswordVisible = passwordInput.transformationMethod == null
-            passwordInput.transformationMethod = if (isPasswordVisible) {
+            val newTransformation = if (isPasswordVisible) {
                 togglePassword.setImageResource(R.drawable.ic_eye_off)
                 PasswordTransformationMethod.getInstance()
             } else {
                 togglePassword.setImageResource(R.drawable.ic_eye)
                 null
             }
+            
+            // Apply to both password fields
+            passwordInput.transformationMethod = newTransformation
+            confirmPasswordInput.transformationMethod = newTransformation
+            
+            // Maintain cursor position
             passwordInput.setSelection(passwordInput.text.length)
+            confirmPasswordInput.setSelection(confirmPasswordInput.text.length)
         }
     }
 } 
