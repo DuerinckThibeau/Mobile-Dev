@@ -4,10 +4,12 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.text.method.PasswordTransformationMethod
+import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -115,6 +117,38 @@ class EditProfileActivity : AppCompatActivity() {
             
             newPasswordInput.setSelection(newPasswordInput.text.length)
             confirmNewPasswordInput.setSelection(confirmNewPasswordInput.text.length)
+        }
+
+        val passwordHeader = findViewById<LinearLayout>(R.id.passwordHeader)
+        val passwordFields = findViewById<LinearLayout>(R.id.passwordFields)
+        val passwordChevron = findViewById<ImageView>(R.id.passwordChevron)
+
+        passwordHeader.setOnClickListener {
+            val isVisible = passwordFields.visibility == View.VISIBLE
+            
+            // Animate chevron
+            passwordChevron.animate()
+                .rotation(if (isVisible) 0f else 180f)
+                .setDuration(300)
+                .start()
+
+            // Animate fields
+            if (isVisible) {
+                passwordFields.animate()
+                    .alpha(0f)
+                    .setDuration(300)
+                    .withEndAction {
+                        passwordFields.visibility = View.GONE
+                    }
+                    .start()
+            } else {
+                passwordFields.alpha = 0f
+                passwordFields.visibility = View.VISIBLE
+                passwordFields.animate()
+                    .alpha(1f)
+                    .setDuration(300)
+                    .start()
+            }
         }
     }
 
