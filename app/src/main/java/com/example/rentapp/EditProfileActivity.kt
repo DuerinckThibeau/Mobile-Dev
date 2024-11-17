@@ -91,7 +91,7 @@ class EditProfileActivity : AppCompatActivity() {
         togglePassword = findViewById(R.id.togglePassword)
 
         findViewById<ImageButton>(R.id.backButton).setOnClickListener {
-            finish()
+            showExitConfirmationDialog()
         }
 
         confirmButton.setOnClickListener {
@@ -268,5 +268,23 @@ class EditProfileActivity : AppCompatActivity() {
             startActivity(intent)
             finish()
         }
+    }
+
+    private fun showExitConfirmationDialog() {
+        val dialog = androidx.appcompat.app.AlertDialog.Builder(this, R.style.AlertDialogTheme)
+            .setTitle("Cancel Editing")
+            .setMessage("Are you sure you want to cancel editing?\nAny unsaved changes will be lost.")
+            .setPositiveButton("CONFIRM") { _, _ ->
+                finish()
+            }
+            .setNegativeButton("CANCEL", null)
+            .create()
+
+        dialog.setOnShowListener {
+            dialog.getButton(androidx.appcompat.app.AlertDialog.BUTTON_POSITIVE).setTextColor(getColor(R.color.white))
+            dialog.getButton(androidx.appcompat.app.AlertDialog.BUTTON_NEGATIVE).setTextColor(getColor(R.color.white))
+        }
+        
+        dialog.show()
     }
 } 

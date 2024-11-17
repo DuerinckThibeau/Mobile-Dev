@@ -17,4 +17,16 @@
     <style name="PopupMenuTheme" parent="ThemeOverlay.AppCompat">
         <item name="android:popupMenuStyle">@style/PopupMenuStyle</item>
     </style>
+
+    <style name="AlertDialogTheme" parent="ThemeOverlay.MaterialComponents.Dialog.Alert">
+        <item name="android:background">#262626</item>
+        <item name="android:textColorPrimary">@color/white</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:buttonBarPositiveButtonStyle">@style/AlertDialogButtonStyle</item>
+        <item name="android:buttonBarNegativeButtonStyle">@style/AlertDialogButtonStyle</item>
+    </style>
+
+    <style name="AlertDialogButtonStyle" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
+        <item name="android:textColor">@color/white</item>
+    </style>
 </resources> 
