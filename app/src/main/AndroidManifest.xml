@@ -37,5 +37,6 @@
         <activity android:name=".ListActivity" />
         <activity android:name=".AddItemActivity" />
         <activity android:name=".ProfileActivity" android:exported="false" />
+        <activity android:name=".EditProfileActivity" />
     </application>
 </manifest>

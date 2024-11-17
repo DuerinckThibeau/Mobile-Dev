@@ -48,7 +48,7 @@ class ProfileActivity : AppCompatActivity() {
             popup.setOnMenuItemClickListener { item ->
                 when (item.itemId) {
                     R.id.action_edit_profile -> {
-                        // TODO
+                        startActivity(Intent(this, EditProfileActivity::class.java))
                         true
                     }
                     R.id.action_logout -> {
