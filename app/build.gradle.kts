@@ -55,5 +55,7 @@ dependencies {
     implementation("com.github.bumptech.glide:glide:4.16.0")
     implementation("androidx.core:core-splashscreen:1.0.1")
     implementation("com.google.android.gms:play-services-location:21.1.0")
-    implementation ("com.google.maps.android:android-maps-utils:2.3.0")
+    implementation("com.google.maps.android:android-maps-utils:2.3.0")
+    implementation("androidx.cardview:cardview:1.0.0")
+    implementation("de.hdodenhof:circleimageview:3.1.0")
 }

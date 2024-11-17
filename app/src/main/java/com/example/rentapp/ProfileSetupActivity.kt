@@ -68,6 +68,7 @@ class ProfileSetupActivity : AppCompatActivity() {
                 "email" to user.email, 
                 "firstname" to firstNameInput.text.toString(),
                 "lastname" to lastNameInput.text.toString(),
+                "phone" to phoneInput.text.toString(),
                 "profilepicture" to ""
             )
 
