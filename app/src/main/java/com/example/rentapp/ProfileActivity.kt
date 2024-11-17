@@ -38,7 +38,6 @@ class ProfileActivity : AppCompatActivity() {
             val popup = PopupMenu(wrapper, view)
             popup.menuInflater.inflate(R.menu.profile_menu, popup.menu)
 
-            // Make menu items white
             for (i in 0 until popup.menu.size()) {
                 popup.menu.getItem(i).title = SpannableString(popup.menu.getItem(i).title).apply {
                     setSpan(ForegroundColorSpan(Color.WHITE), 0, length, 0)
@@ -48,7 +47,7 @@ class ProfileActivity : AppCompatActivity() {
             popup.setOnMenuItemClickListener { item ->
                 when (item.itemId) {
                     R.id.action_edit_profile -> {
-                        startActivity(Intent(this, EditProfileActivity::class.java))
+                        startActivityForResult(Intent(this, EditProfileActivity::class.java), EDIT_PROFILE_REQUEST)
                         true
                     }
                     R.id.action_logout -> {
@@ -120,5 +119,16 @@ class ProfileActivity : AppCompatActivity() {
             }
         }
         navView.selectedItemId = R.id.navigation_profile
+    }
+
+    companion object {
+        private const val EDIT_PROFILE_REQUEST = 1
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == EDIT_PROFILE_REQUEST && resultCode == RESULT_OK) {
+            loadUserData() 
+        }
     }
 } 

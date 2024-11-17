@@ -36,13 +36,41 @@
             android:layout_height="24dp" />
     </LinearLayout>
 
+    <FrameLayout
+        android:id="@+id/profilePicContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        app:layout_constraintTop_toBottomOf="@id/headerLayout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/profileImage"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:src="@drawable/ic_person"
+            android:background="@drawable/circle_outline"/>
+
+        <ImageView
+            android:id="@+id/changeProfilePicButton"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="end|bottom"
+            android:src="@drawable/ic_add"
+            android:background="@drawable/circle_white_background"
+            android:padding="4dp"
+            android:tint="#262626"/>
+
+    </FrameLayout>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:layout_marginHorizontal="32dp"
         android:layout_marginTop="32dp"
-        app:layout_constraintTop_toBottomOf="@id/headerLayout">
+        app:layout_constraintTop_toBottomOf="@id/profilePicContainer">
 
         <LinearLayout
             android:layout_width="match_parent"
