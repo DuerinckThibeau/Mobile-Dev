@@ -9,6 +9,11 @@ import com.bumptech.glide.Glide
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import android.widget.PopupMenu
+import android.view.ContextThemeWrapper
+import android.graphics.Color
+import android.text.SpannableString
+import android.text.style.ForegroundColorSpan
 
 class ProfileActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
@@ -26,6 +31,37 @@ class ProfileActivity : AppCompatActivity() {
 
         findViewById<ImageButton>(R.id.backButton).setOnClickListener {
             finish()
+        }
+
+        findViewById<ImageButton>(R.id.editButton).setOnClickListener { view ->
+            val wrapper = ContextThemeWrapper(this, R.style.PopupMenuTheme)
+            val popup = PopupMenu(wrapper, view)
+            popup.menuInflater.inflate(R.menu.profile_menu, popup.menu)
+
+            // Make menu items white
+            for (i in 0 until popup.menu.size()) {
+                popup.menu.getItem(i).title = SpannableString(popup.menu.getItem(i).title).apply {
+                    setSpan(ForegroundColorSpan(Color.WHITE), 0, length, 0)
+                }
+            }
+
+            popup.setOnMenuItemClickListener { item ->
+                when (item.itemId) {
+                    R.id.action_edit_profile -> {
+                        // TODO
+                        true
+                    }
+                    R.id.action_logout -> {
+                        auth.signOut()
+                        val intent = Intent(this, LoginActivity::class.java)
+                        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                        startActivity(intent)
+                        true
+                    }
+                    else -> false
+                }
+            }
+            popup.show()
         }
     }
 
