@@ -3,6 +3,7 @@ package com.example.rentapp
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.text.method.PasswordTransformationMethod
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
@@ -11,6 +12,7 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
+import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
@@ -29,6 +31,10 @@ class EditProfileActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var db: FirebaseFirestore
     private lateinit var profileImage: CircleImageView
+    private lateinit var oldPasswordInput: EditText
+    private lateinit var newPasswordInput: EditText
+    private lateinit var confirmNewPasswordInput: EditText
+    private lateinit var togglePassword: ImageButton
 
     private val getContent = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
         uri?.let { selectedImageUri ->
@@ -77,6 +83,10 @@ class EditProfileActivity : AppCompatActivity() {
         cityInput = findViewById(R.id.cityInput)
         confirmButton = findViewById(R.id.confirmButton)
         profileImage = findViewById(R.id.profileImage)
+        oldPasswordInput = findViewById(R.id.oldPasswordInput)
+        newPasswordInput = findViewById(R.id.newPasswordInput)
+        confirmNewPasswordInput = findViewById(R.id.confirmNewPasswordInput)
+        togglePassword = findViewById(R.id.togglePassword)
 
         findViewById<ImageButton>(R.id.backButton).setOnClickListener {
             finish()
@@ -88,6 +98,23 @@ class EditProfileActivity : AppCompatActivity() {
 
         findViewById<ImageView>(R.id.changeProfilePicButton).setOnClickListener {
             getContent.launch("image/*")
+        }
+
+        togglePassword.setOnClickListener {
+            val isPasswordVisible = newPasswordInput.transformationMethod == null
+            val newTransformation = if (isPasswordVisible) {
+                togglePassword.setImageResource(R.drawable.ic_eye_off)
+                PasswordTransformationMethod.getInstance()
+            } else {
+                togglePassword.setImageResource(R.drawable.ic_eye)
+                null
+            }
+            
+            newPasswordInput.transformationMethod = newTransformation
+            confirmNewPasswordInput.transformationMethod = newTransformation
+            
+            newPasswordInput.setSelection(newPasswordInput.text.length)
+            confirmNewPasswordInput.setSelection(confirmNewPasswordInput.text.length)
         }
     }
 
@@ -122,7 +149,49 @@ class EditProfileActivity : AppCompatActivity() {
         }
     }
 
+    private fun updatePassword() {
+        val oldPassword = oldPasswordInput.text.toString()
+        val newPassword = newPasswordInput.text.toString()
+        val confirmNewPassword = confirmNewPasswordInput.text.toString()
+
+        if (oldPassword.isEmpty() || newPassword.isEmpty() || confirmNewPassword.isEmpty()) {
+            return
+        }
+
+        if (newPassword != confirmNewPassword) {
+            Toast.makeText(this, "New passwords do not match", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val user = auth.currentUser
+        val credential = EmailAuthProvider.getCredential(user?.email!!, oldPassword)
+
+        user.reauthenticate(credential)
+            .addOnSuccessListener {
+                user.updatePassword(newPassword)
+                    .addOnSuccessListener {
+                        Toast.makeText(this, "Password updated successfully", Toast.LENGTH_SHORT).show()
+                        oldPasswordInput.text.clear()
+                        newPasswordInput.text.clear()
+                        confirmNewPasswordInput.text.clear()
+                    }
+                    .addOnFailureListener { e ->
+                        Toast.makeText(this, "Failed to update password: ${e.message}", Toast.LENGTH_SHORT).show()
+                    }
+            }
+            .addOnFailureListener {
+                Toast.makeText(this, "Current password is incorrect", Toast.LENGTH_SHORT).show()
+            }
+    }
+
     private fun saveUserProfile() {
+        val oldPassword = oldPasswordInput.text.toString()
+        val newPassword = newPasswordInput.text.toString()
+        
+        if (oldPassword.isNotEmpty() || newPassword.isNotEmpty()) {
+            updatePassword()
+        }
+
         val currentUser = auth.currentUser
         currentUser?.let { user ->
             val street = streetInput.text.toString()
@@ -159,8 +228,7 @@ class EditProfileActivity : AppCompatActivity() {
                 .addOnFailureListener { e ->
                     Toast.makeText(this, "Error updating profile: ${e.message}", Toast.LENGTH_SHORT).show()
                 }
-
-            // Update ProfileActivity immediately
+                
             val intent = Intent(this, ProfileActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
             startActivity(intent)
