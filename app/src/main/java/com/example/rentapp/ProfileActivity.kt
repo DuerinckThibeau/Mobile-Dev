@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import com.bumptech.glide.Glide
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -37,6 +38,7 @@ class ProfileActivity : AppCompatActivity() {
                     if (document != null) {
                         val firstName = document.getString("firstname") ?: ""
                         val lastName = document.getString("lastname") ?: ""
+                        val profilePicture = document.getString("profilepicture") ?: ""
                         val address = document.get("address") as? Map<String, Any>
                         
                         findViewById<TextView>(R.id.userName).text = "$firstName $lastName"
@@ -51,6 +53,15 @@ class ProfileActivity : AppCompatActivity() {
                         
                         findViewById<TextView>(R.id.phoneText).text = 
                             document.getString("phone") ?: ""
+                        
+                        val profileImageView = findViewById<de.hdodenhof.circleimageview.CircleImageView>(R.id.profileImage)
+                        if (profilePicture.isNotEmpty()) {
+                            Glide.with(this)
+                                .load(profilePicture)
+                                .placeholder(R.drawable.ic_person)
+                                .error(R.drawable.ic_person)
+                                .into(profileImageView)
+                        }
                     }
                 }
         }
