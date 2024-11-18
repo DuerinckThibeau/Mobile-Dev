@@ -97,7 +97,7 @@ class ProfileActivity : AppCompatActivity() {
                             "$street $number\n$zipcode $city"
                         
                         findViewById<TextView>(R.id.phoneText).text = 
-                            document.getString("phone") ?: ""
+                            formatPhoneNumber(document.getString("phone") ?: "")
                         
                         val profileImageView = findViewById<de.hdodenhof.circleimageview.CircleImageView>(R.id.profileImage)
                         if (profilePicture.isNotEmpty()) {
@@ -168,5 +168,16 @@ class ProfileActivity : AppCompatActivity() {
     override fun onPause() {
         super.onPause()
         mapView.onPause()
+    }
+
+    private fun formatPhoneNumber(phone: String): String {
+        return phone.replace("\\s".toRegex(), "") 
+            .let { 
+                if (it.length >= 10) {
+                    "${it.substring(0,4)} ${it.substring(4,6)} ${it.substring(6,8)} ${it.substring(8)}"
+                } else {
+                    it  
+                }
+            }
     }
 } 
