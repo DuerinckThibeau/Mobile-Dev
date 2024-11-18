@@ -14,10 +14,16 @@ import android.view.ContextThemeWrapper
 import android.graphics.Color
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
+import org.osmdroid.config.Configuration
+import org.osmdroid.tileprovider.tilesource.TileSourceFactory
+import org.osmdroid.util.GeoPoint
+import org.osmdroid.views.MapView
+import org.osmdroid.views.overlay.Marker
 
 class ProfileActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var db: FirebaseFirestore
+    private lateinit var mapView: MapView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,6 +31,10 @@ class ProfileActivity : AppCompatActivity() {
 
         auth = FirebaseAuth.getInstance()
         db = FirebaseFirestore.getInstance()
+
+        Configuration.getInstance().userAgentValue = packageName
+        mapView = findViewById(R.id.mapView)
+        mapView.setTileSource(TileSourceFactory.MAPNIK)
 
         loadUserData()
         setupBottomNavigation()
@@ -97,6 +107,12 @@ class ProfileActivity : AppCompatActivity() {
                                 .error(R.drawable.ic_person)
                                 .into(profileImageView)
                         }
+
+                        // Setup map with user's location
+                        val geoPoint = address?.get("geopoint") as? com.google.firebase.firestore.GeoPoint
+                        if (geoPoint != null) {
+                            setupMap(geoPoint.latitude, geoPoint.longitude)
+                        }
                     }
                 }
         }
@@ -130,5 +146,27 @@ class ProfileActivity : AppCompatActivity() {
         if (requestCode == EDIT_PROFILE_REQUEST && resultCode == RESULT_OK) {
             loadUserData() 
         }
+    }
+
+    private fun setupMap(latitude: Double, longitude: Double) {
+        val mapController = mapView.controller
+        mapController.setZoom(15.0)
+        val startPoint = GeoPoint(latitude, longitude)
+        mapController.setCenter(startPoint)
+
+        val marker = Marker(mapView)
+        marker.position = startPoint
+        marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+        mapView.overlays.add(marker)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        mapView.onResume()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        mapView.onPause()
     }
 } 
