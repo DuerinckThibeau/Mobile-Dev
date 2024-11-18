@@ -1,5 +1,6 @@
 package com.example.rentapp.adapters
 
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -7,18 +8,20 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.rentapp.ItemDetailActivity
 import com.example.rentapp.R
 import com.example.rentapp.models.Item
+import de.hdodenhof.circleimageview.CircleImageView
 
 class ItemGridAdapter(private val items: List<Item>) : 
     RecyclerView.Adapter<ItemGridAdapter.ItemViewHolder>() {
 
     class ItemViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val itemImage: ImageView = view.findViewById(R.id.itemImage)
-        val itemTitle: TextView = view.findViewById(R.id.itemTitle)
-        val itemDescription: TextView = view.findViewById(R.id.itemDescription)
+        val title: TextView = view.findViewById(R.id.itemTitle)
+        val description: TextView = view.findViewById(R.id.itemDescription)
+        val image: ImageView = view.findViewById(R.id.itemImage)
+        val userImage: CircleImageView = view.findViewById(R.id.userImage)
         val userName: TextView = view.findViewById(R.id.userName)
-        val userImage: ImageView = view.findViewById(R.id.userImage)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
@@ -29,26 +32,28 @@ class ItemGridAdapter(private val items: List<Item>) :
 
     override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
         val item = items[position]
-        holder.itemTitle.text = item.title
-        holder.itemDescription.text = item.description
+        
+        holder.title.text = item.title
+        holder.description.text = item.description
         holder.userName.text = item.createdBy
 
         if (item.imageUrl.isNotEmpty()) {
-            Glide.with(holder.itemImage.context)
+            Glide.with(holder.image.context)
                 .load(item.imageUrl)
-                .placeholder(R.drawable.ic_image_placeholder)
-                .into(holder.itemImage)
-        } else {
-            holder.itemImage.setImageResource(R.drawable.ic_image_placeholder)
+                .into(holder.image)
         }
 
         if (item.createdByProfilePic.isNotEmpty()) {
             Glide.with(holder.userImage.context)
                 .load(item.createdByProfilePic)
-                .placeholder(R.drawable.ic_person)
                 .into(holder.userImage)
-        } else {
-            holder.userImage.setImageResource(R.drawable.ic_person)
+        }
+
+        // Set click listener
+        holder.itemView.setOnClickListener {
+            val intent = Intent(holder.itemView.context, ItemDetailActivity::class.java)
+            intent.putExtra("itemId", item.id)
+            holder.itemView.context.startActivity(intent)
         }
     }
 
