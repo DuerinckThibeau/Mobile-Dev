@@ -50,11 +50,13 @@ class ListActivity : AppCompatActivity(), FilterBottomSheet.FilterListener {
         db.collection("items")
             .get()
             .addOnSuccessListener { result ->
-                allItems = result.toObjects(Item::class.java)
+                allItems = result.documents.map { doc ->
+                    doc.toObject(Item::class.java)?.copy(id = doc.id) ?: Item()
+                }
                 recyclerView.adapter = ItemGridAdapter(allItems)
             }
             .addOnFailureListener { exception ->
-                
+                // Handle failure
             }
     }
 
