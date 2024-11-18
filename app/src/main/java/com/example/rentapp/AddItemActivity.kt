@@ -165,25 +165,32 @@ class AddItemActivity : AppCompatActivity() {
                     )
 
                     val item = hashMapOf(
-                        "category" to category,
-                        "createdBy" to "$firstName $lastName",
-                        "createdByProfilePic" to profilePicture,
+                        "title" to title,
+                        "price" to price,
                         "description" to description,
-                        "imageUrl" to "", 
-                        "location" to hashMapOf(
-                            "street" to street,
+                        "category" to category,
+                        "imageUrl" to "",
+                        "createdBy" to currentUser.uid,
+                        "createdByName" to "$firstName $lastName",
+                        "createdByProfilePic" to profilePicture,
+                        "location" to mapOf(
+                            "streetname" to street,
                             "city" to city,
                             "geopoint" to geoPoint
                         ),
-                        "price" to price.toDouble(),
-                        "title" to title
+                        "isRented" to false
                     )
 
+                    // Create item in database
                     db.collection("items")
                         .add(item)
                         .addOnSuccessListener {
-                            Toast.makeText(this, "Item added successfully", Toast.LENGTH_SHORT).show()
-                            finish()
+                            if (selectedImageUri != null) {
+                                uploadImage(it.id, selectedImageUri!!)
+                            } else {
+                                Toast.makeText(this, "Item added successfully", Toast.LENGTH_SHORT).show()
+                                finish()
+                            }
                         }
                         .addOnFailureListener { e ->
                             Toast.makeText(this, "Error adding item: ${e.message}", Toast.LENGTH_SHORT).show()
@@ -192,6 +199,30 @@ class AddItemActivity : AppCompatActivity() {
             }
             .addOnFailureListener { e ->
                 Toast.makeText(this, "Error getting user data: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+    }
+
+    private fun uploadImage(itemId: String, imageUri: Uri) {
+        val storageRef = FirebaseStorage.getInstance().reference
+        val imageRef = storageRef.child("items/$itemId.jpg")
+
+        imageRef.putFile(imageUri)
+            .addOnSuccessListener {
+                imageRef.downloadUrl.addOnSuccessListener { uri ->
+                    // Update the item with the image URL
+                    db.collection("items").document(itemId)
+                        .update("imageUrl", uri.toString())
+                        .addOnSuccessListener {
+                            Toast.makeText(this, "Item added successfully", Toast.LENGTH_SHORT).show()
+                            finish()
+                        }
+                        .addOnFailureListener { e ->
+                            Toast.makeText(this, "Error updating image URL: ${e.message}", Toast.LENGTH_SHORT).show()
+                        }
+                }
+            }
+            .addOnFailureListener { e ->
+                Toast.makeText(this, "Error uploading image: ${e.message}", Toast.LENGTH_SHORT).show()
             }
     }
 } 
