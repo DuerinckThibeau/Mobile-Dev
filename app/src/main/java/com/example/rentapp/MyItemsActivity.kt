@@ -53,7 +53,7 @@ class MyItemsActivity : AppCompatActivity() {
         val currentUser = auth.currentUser
         if (currentUser != null) {
             db.collection("items")
-                .whereEqualTo("createdBy", currentUser.uid)
+                .whereEqualTo("createdById", currentUser.uid)
                 .get()
                 .addOnSuccessListener { result ->
                     allItems = result.documents.map { doc ->

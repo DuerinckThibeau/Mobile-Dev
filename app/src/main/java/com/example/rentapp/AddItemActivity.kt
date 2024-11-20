@@ -170,8 +170,8 @@ class AddItemActivity : AppCompatActivity() {
                         "description" to description,
                         "category" to category,
                         "imageUrl" to "",
-                        "createdBy" to currentUser.uid,
-                        "createdByName" to "$firstName $lastName",
+                        "createdById" to currentUser.uid,
+                        "createdBy" to "$firstName $lastName",
                         "createdByProfilePic" to profilePicture,
                         "location" to mapOf(
                             "streetname" to street,
