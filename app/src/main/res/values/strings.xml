@@ -4,6 +4,8 @@
         <item>Category</item>
         <item>Electronics</item>
         <item>Furniture</item>
+        <item>Tools</item>
+        <item>Vehicles</item>
         <item>Books</item>
         <item>Other</item>
     </string-array>

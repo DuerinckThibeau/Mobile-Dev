@@ -89,7 +89,7 @@ class ItemDetailActivity : AppCompatActivity() {
                     val location = document.get("location") as? Map<*, *>
                     val city = location?.get("city") as? String
                     val street = location?.get("streetname") as? String
-                    findViewById<TextView>(R.id.locationText).text = "$street, $city"
+                    findViewById<TextView>(R.id.locationText).text = "$city"
 
                     // Load item image
                     val imageUrl = document.getString("imageUrl")
