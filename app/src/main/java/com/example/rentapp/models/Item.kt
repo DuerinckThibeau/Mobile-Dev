@@ -6,7 +6,9 @@ data class Item(
     val description: String = "",
     val imageUrl: String = "",
     val createdBy: String = "",
+    val createdByName: String = "",
     val createdByProfilePic: String = "",
     val category: String = "",
-    val location: Map<String, Any> = mapOf()
+    val location: Map<String, Any> = mapOf(),
+    val isRented: Boolean = false
 ) 

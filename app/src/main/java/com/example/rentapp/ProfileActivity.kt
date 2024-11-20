@@ -67,6 +67,10 @@ class ProfileActivity : AppCompatActivity() {
                         startActivity(intent)
                         true
                     }
+                    R.id.action_my_items -> {
+                        startActivity(Intent(this, MyItemsActivity::class.java))
+                        true
+                    }
                     else -> false
                 }
             }
