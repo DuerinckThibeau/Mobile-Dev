@@ -44,15 +44,6 @@ class HomeActivity : AppCompatActivity() {
                 }
         }
 
-        findViewById<Button>(R.id.logoutButton).setOnClickListener {
-            auth.signOut()
-            // Navigate back to login screen
-            val intent = Intent(this, LoginActivity::class.java)
-            // Clear the back stack so user can't go back after logging out
-            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            startActivity(intent)
-        }
-
         val navView: BottomNavigationView = findViewById(R.id.nav_view)
         
         navView.setOnItemSelectedListener { item ->
