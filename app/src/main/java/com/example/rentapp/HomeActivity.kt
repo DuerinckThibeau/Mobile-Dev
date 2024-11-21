@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.rentapp.models.Rental
 import com.example.rentapp.adapters.RentalAdapter
 import android.widget.ImageButton
+import android.view.View
 
 class HomeActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
@@ -127,5 +128,30 @@ class HomeActivity : AppCompatActivity() {
             .addOnFailureListener { e ->
                 Toast.makeText(this, "Failed to update rental: ${e.message}", Toast.LENGTH_SHORT).show()
             }
+    }
+
+    private fun updateNotificationBadge() {
+        val currentUser = auth.currentUser
+        currentUser?.let { user ->
+            db.collection("notifications")
+                .whereEqualTo("userId", user.uid)
+                .whereEqualTo("read", false)
+                .get()
+                .addOnSuccessListener { result ->
+                    val unreadCount = result.size()
+                    val badge = findViewById<TextView>(R.id.notificationBadge)
+                    if (unreadCount > 0) {
+                        badge.visibility = View.VISIBLE
+                        badge.text = if (unreadCount > 9) "9+" else unreadCount.toString()
+                    } else {
+                        badge.visibility = View.GONE
+                    }
+                }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        updateNotificationBadge()
     }
 } 
