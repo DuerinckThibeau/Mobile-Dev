@@ -30,4 +30,60 @@
     <style name="AlertDialogButtonStyle" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
         <item name="android:textColor">@color/white</item>
     </style>
+
+    <style name="CustomCalendarStyle" parent="ThemeOverlay.MaterialComponents.MaterialCalendar">
+        <item name="android:colorBackground">#262626</item>
+        <item name="materialCalendarHeaderLayout">@style/CustomHeaderStyle</item>
+        <item name="materialCalendarHeaderTitle">@style/CustomHeaderTextStyle</item>
+        <item name="materialCalendarHeaderDivider">@android:color/transparent</item>
+        <item name="materialCalendarHeaderSelection">@style/CustomHeaderSelectionStyle</item>
+        <item name="materialCalendarDay">@style/CustomCalendarDayStyle</item>
+    </style>
+
+    <style name="CustomHeaderStyle" parent="Widget.MaterialComponents.MaterialCalendar.HeaderLayout">
+        <item name="android:background">#1A1A1A</item>
+    </style>
+
+    <style name="CustomHeaderTextStyle" parent="Widget.MaterialComponents.MaterialCalendar.HeaderTitle">
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="CustomHeaderSelectionStyle" parent="Widget.MaterialComponents.MaterialCalendar.HeaderSelection">
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="CustomCalendarDayStyle" parent="Widget.MaterialComponents.MaterialCalendar.Day">
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="CustomDatePickerDialog" parent="Theme.MaterialComponents.Dialog">
+        <item name="android:windowBackground">#262626</item>
+        <item name="android:colorBackground">#262626</item>
+        <item name="android:textColorPrimary">@color/white</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="colorAccent">@color/white</item>
+        <item name="android:datePickerStyle">@style/CustomDatePickerStyle</item>
+        <item name="android:buttonBarButtonStyle">@style/DatePickerButtonStyle</item>
+        <item name="android:buttonBarPositiveButtonStyle">@style/DatePickerButtonStyle</item>
+        <item name="android:buttonBarNegativeButtonStyle">@style/DatePickerButtonStyle</item>
+    </style>
+
+    <style name="CustomDatePickerStyle" parent="android:Widget.Material.DatePicker">
+        <item name="android:background">#262626</item>
+        <item name="android:calendarTextColor">@color/white</item>
+        <item name="android:headerBackground">#1A1A1A</item>
+        <item name="android:dayOfWeekBackground">#262626</item>
+        <item name="android:dayOfWeekTextAppearance">@style/DatePickerTextAppearance</item>
+        <item name="android:headerMonthTextAppearance">@style/DatePickerTextAppearance</item>
+        <item name="android:headerDayOfMonthTextAppearance">@style/DatePickerTextAppearance</item>
+        <item name="android:headerYearTextAppearance">@style/DatePickerTextAppearance</item>
+    </style>
+
+    <style name="DatePickerTextAppearance" parent="TextAppearance.MaterialComponents.Body1">
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="DatePickerButtonStyle" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
+        <item name="android:textColor">@color/white</item>
+    </style>
 </resources> 

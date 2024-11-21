@@ -58,6 +58,7 @@ class ContactBottomSheet : BottomSheetDialogFragment() {
     private fun showDatePicker(dateInput: EditText) {
         DatePickerDialog(
             requireContext(),
+            R.style.CustomDatePickerDialog,
             { _, year, month, day ->
                 calendar.set(year, month, day)
                 dateInput.setText(dateFormatter.format(calendar.time))
