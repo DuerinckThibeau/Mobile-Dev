@@ -14,4 +14,4 @@
 #### Nice to Haves
 
 - [ ] Andere gebruikers beoordelen
-- [ ] Automatische herinneringen
+- [x] Automatische herinneringen
