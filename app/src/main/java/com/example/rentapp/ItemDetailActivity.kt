@@ -117,6 +117,11 @@ class ItemDetailActivity : AppCompatActivity() {
                     if (geoPoint != null) {
                         setupMap(geoPoint.latitude, geoPoint.longitude)
                     }
+
+                    findViewById<Button>(R.id.contactButton).setOnClickListener {
+                        ContactBottomSheet.newInstance(document.getString("createdBy") ?: "")
+                            .show(supportFragmentManager, "ContactBottomSheet")
+                    }
                 }
             }
     }
