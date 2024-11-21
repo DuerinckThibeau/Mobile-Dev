@@ -8,10 +8,13 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
+import android.widget.Toast
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
 class ContactBottomSheet : BottomSheetDialogFragment() {
     private lateinit var ownerNameText: TextView
@@ -66,16 +69,71 @@ class ContactBottomSheet : BottomSheetDialogFragment() {
 
     private fun setupSendButton() {
         sendButton.setOnClickListener {
-            // Handle sending message here
-            dismiss()
+            val startDate = startDateInput.text.toString()
+            val endDate = endDateInput.text.toString()
+            val message = messageInput.text.toString()
+
+            if (startDate.isEmpty() || endDate.isEmpty()) {
+                Toast.makeText(context, "Please select dates", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            val currentUser = FirebaseAuth.getInstance().currentUser
+            if (currentUser == null) {
+                Toast.makeText(context, "Please log in again", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            val db = FirebaseFirestore.getInstance()
+            
+            // Get current user's details
+            db.collection("users").document(currentUser.uid)
+                .get()
+                .addOnSuccessListener { userDoc ->
+                    val firstName = userDoc.getString("firstname") ?: ""
+                    val lastName = userDoc.getString("lastname") ?: ""
+                    val profilePic = userDoc.getString("profilepicture") ?: ""
+
+                    // Get item details
+                    arguments?.getString("itemId")?.let { itemId ->
+                        db.collection("items").document(itemId)
+                            .get()
+                            .addOnSuccessListener { itemDoc ->
+                                val rental = hashMapOf(
+                                    "itemId" to itemId,
+                                    "itemTitle" to itemDoc.getString("title"),
+                                    "itemImage" to itemDoc.getString("imageUrl"),
+                                    "requestedById" to currentUser.uid,
+                                    "requestedByName" to "$firstName $lastName",
+                                    "requestedByProfilePic" to profilePic,
+                                    "ownerId" to itemDoc.getString("createdById"),
+                                    "startDate" to startDate,
+                                    "endDate" to endDate,
+                                    "message" to message,
+                                    "status" to "PENDING"
+                                )
+
+                                db.collection("rentals")
+                                    .add(rental)
+                                    .addOnSuccessListener {
+                                        Toast.makeText(context, "Request sent successfully", Toast.LENGTH_SHORT).show()
+                                        dismiss()
+                                    }
+                                    .addOnFailureListener { e ->
+                                        Toast.makeText(context, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+                                    }
+                            }
+                    }
+                }
         }
     }
 
     companion object {
-        fun newInstance(ownerName: String): ContactBottomSheet {
+        fun newInstance(ownerName: String, itemId: String): ContactBottomSheet {
             return ContactBottomSheet().apply {
                 arguments = Bundle().apply {
                     putString("ownerName", ownerName)
+                    putString("itemId", itemId)
                 }
             }
         }
