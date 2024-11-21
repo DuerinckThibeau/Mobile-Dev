@@ -50,4 +50,8 @@ class NotificationAdapter(
         val sdf = SimpleDateFormat("dd MMM, HH:mm", Locale.getDefault())
         return sdf.format(Date(timestamp))
     }
+
+    fun getNotificationAt(position: Int): Notification {
+        return notifications[position]
+    }
 } 
