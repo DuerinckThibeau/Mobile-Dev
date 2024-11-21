@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.rentapp.models.Rental
 import com.example.rentapp.adapters.RentalAdapter
+import android.widget.ImageButton
 
 class HomeActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
@@ -72,6 +73,10 @@ class HomeActivity : AppCompatActivity() {
                 else -> false
             }
         }
+
+        findViewById<ImageButton>(R.id.notificationButton).setOnClickListener {
+            startActivity(Intent(this, NotificationsActivity::class.java))
+        }
     }
 
     private fun loadRentalRequests() {
@@ -97,11 +102,30 @@ class HomeActivity : AppCompatActivity() {
             .update("status", if (accepted) "ACCEPTED" else "REJECTED")
             .addOnSuccessListener {
                 if (accepted) {
-                    // Update item status to rented
                     db.collection("items").document(rental.itemId)
                         .update("isRented", true)
                 }
-                loadRentalRequests()
+                
+                // Create notification for requester
+                val notification = hashMapOf(
+                    "userId" to rental.requestedById,
+                    "title" to "Rental Request ${if (accepted) "Accepted" else "Rejected"}",
+                    "message" to "Your request to rent ${rental.itemTitle} has been ${if (accepted) "accepted" else "rejected"}",
+                    "timestamp" to System.currentTimeMillis(),
+                    "read" to false
+                )
+                
+                db.collection("notifications").add(notification)
+                    .addOnSuccessListener {
+                        Toast.makeText(this, "Notification sent", Toast.LENGTH_SHORT).show()
+                        loadRentalRequests()
+                    }
+                    .addOnFailureListener { e ->
+                        Toast.makeText(this, "Failed to send notification: ${e.message}", Toast.LENGTH_SHORT).show()
+                    }
+            }
+            .addOnFailureListener { e ->
+                Toast.makeText(this, "Failed to update rental: ${e.message}", Toast.LENGTH_SHORT).show()
             }
     }
 } 
