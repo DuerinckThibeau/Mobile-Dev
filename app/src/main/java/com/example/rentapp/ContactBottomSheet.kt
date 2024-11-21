@@ -15,6 +15,7 @@ import java.util.Calendar
 import java.util.Locale
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.DocumentSnapshot
 
 class ContactBottomSheet : BottomSheetDialogFragment() {
     private lateinit var ownerNameText: TextView
@@ -118,6 +119,7 @@ class ContactBottomSheet : BottomSheetDialogFragment() {
                                     .addOnSuccessListener {
                                         Toast.makeText(context, "Request sent successfully", Toast.LENGTH_SHORT).show()
                                         dismiss()
+                                        scheduleReturnReminder(rental, itemDoc)
                                     }
                                     .addOnFailureListener { e ->
                                         Toast.makeText(context, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
@@ -126,6 +128,45 @@ class ContactBottomSheet : BottomSheetDialogFragment() {
                     }
                 }
         }
+    }
+
+    private fun scheduleReturnReminder(rental: Map<String, Any?>, itemDoc: DocumentSnapshot) {
+        val endDateStr = rental["endDate"] as String
+        val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+        val endDate = dateFormat.parse(endDateStr)
+        
+        // Calculate reminder date (1 day before end date)
+        val reminderDate = Calendar.getInstance().apply {
+            time = endDate
+            add(Calendar.DAY_OF_MONTH, -1)
+        }.time
+
+        val reminderTimestamp = reminderDate.time
+
+        // Create reminder notification for owner
+        val ownerReminder = hashMapOf(
+            "userId" to rental["ownerId"],
+            "title" to "Return Reminder",
+            "message" to "Remember: ${rental["itemTitle"]} should be returned tomorrow by ${rental["requestedByName"]}",
+            "timestamp" to reminderTimestamp,
+            "read" to false,
+            "scheduledFor" to reminderTimestamp
+        )
+
+        // Create reminder notification for renter
+        val renterReminder = hashMapOf(
+            "userId" to rental["requestedById"],
+            "title" to "Return Reminder",
+            "message" to "Remember: ${rental["itemTitle"]} needs to be returned tomorrow",
+            "timestamp" to reminderTimestamp,
+            "read" to false,
+            "scheduledFor" to reminderTimestamp
+        )
+
+        // Store both reminders
+        val db = FirebaseFirestore.getInstance()
+        db.collection("scheduledNotifications").add(ownerReminder)
+        db.collection("scheduledNotifications").add(renterReminder)
     }
 
     companion object {
