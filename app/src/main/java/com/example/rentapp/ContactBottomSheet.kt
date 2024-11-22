@@ -120,7 +120,7 @@ class ContactBottomSheet : BottomSheetDialogFragment() {
                                     .addOnSuccessListener {
                                         Toast.makeText(context, "Request sent successfully", Toast.LENGTH_SHORT).show()
                                         dismiss()
-                                        scheduleReturnReminder(rental, itemDoc)
+                                        // scheduleReturnReminder(rental, itemDoc)
                                     }
                                     .addOnFailureListener { e ->
                                         Toast.makeText(context, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
