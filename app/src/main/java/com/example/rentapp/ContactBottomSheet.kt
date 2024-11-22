@@ -56,6 +56,8 @@ class ContactBottomSheet : BottomSheetDialogFragment() {
     }
 
     private fun showDatePicker(dateInput: EditText) {
+        val today = Calendar.getInstance()
+        
         DatePickerDialog(
             requireContext(),
             R.style.CustomDatePickerDialog,
@@ -66,7 +68,9 @@ class ContactBottomSheet : BottomSheetDialogFragment() {
             calendar.get(Calendar.YEAR),
             calendar.get(Calendar.MONTH),
             calendar.get(Calendar.DAY_OF_MONTH)
-        ).show()
+        ).apply {
+            datePicker.minDate = today.timeInMillis
+        }.show()
     }
 
     private fun setupSendButton() {
