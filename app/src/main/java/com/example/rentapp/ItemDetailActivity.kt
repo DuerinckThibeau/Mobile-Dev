@@ -88,7 +88,6 @@ class ItemDetailActivity : AppCompatActivity() {
                     
                     val location = document.get("location") as? Map<*, *>
                     val city = location?.get("city") as? String
-                    val street = location?.get("streetname") as? String
                     findViewById<TextView>(R.id.locationText).text = "$city"
 
                     // Load item image
@@ -110,6 +109,12 @@ class ItemDetailActivity : AppCompatActivity() {
                         Glide.with(this)
                             .load(createdByProfilePic)
                             .into(findViewById<CircleImageView>(R.id.userImage))
+                    }
+
+                    // Setup contact button
+                    findViewById<Button>(R.id.contactButton).setOnClickListener {
+                        ContactBottomSheet.newInstance(createdBy, document.id)
+                            .show(supportFragmentManager, "ContactBottomSheet")
                     }
 
                     // Setup map
