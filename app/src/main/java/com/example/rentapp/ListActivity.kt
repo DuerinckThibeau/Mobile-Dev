@@ -19,6 +19,7 @@ class ListActivity : AppCompatActivity(), FilterBottomSheet.FilterListener {
     private lateinit var db: FirebaseFirestore
     private var allItems = listOf<Item>()
     private var filterSheet: FilterBottomSheet? = null
+    private var lastRadius: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -82,11 +83,15 @@ class ListActivity : AppCompatActivity(), FilterBottomSheet.FilterListener {
     private fun showFilterSheet() {
         filterSheet = FilterBottomSheet().apply {
             setFilterListener(this@ListActivity)
+            arguments = Bundle().apply {
+                putInt("lastRadius", lastRadius)
+            }
         }
         filterSheet?.show(supportFragmentManager, "FilterBottomSheet")
     }
 
     override fun onFilterChanged(search: String, category: String, location: String, radiusKm: Int) {
+        lastRadius = radiusKm
         var filteredItems = allItems
 
         if (search.isNotEmpty()) {

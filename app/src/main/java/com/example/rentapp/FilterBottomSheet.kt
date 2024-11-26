@@ -35,6 +35,7 @@ class FilterBottomSheet : BottomSheetDialogFragment() {
     private var circleOverlay: CircleOverlay? = null
     private var currentZoom = 15.0
     private var marker: Marker? = null
+    private var savedRadius: Int = 0
 
     interface FilterListener {
         fun onFilterChanged(search: String, category: String, location: String, radiusKm: Int)
@@ -57,6 +58,11 @@ class FilterBottomSheet : BottomSheetDialogFragment() {
         setupMap()
 
         return view
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        savedRadius = arguments?.getInt("lastRadius", 0) ?: 0
     }
 
     private fun setupSearchListener() {
@@ -177,7 +183,11 @@ class FilterBottomSheet : BottomSheetDialogFragment() {
 
     private fun setupRadiusSlider() {
         radiusSlider.isEnabled = false  // Disable initially
+        radiusSlider.value = savedRadius.toFloat()  // Set the initial value from arguments
+        radiusLabel.text = "Distance: $savedRadius km"
+        
         radiusSlider.addOnChangeListener { _, value, _ ->
+            savedRadius = value.toInt()
             radiusLabel.text = "Distance: ${value.toInt()} km"
             updateMapRadius(value.toInt())
             notifyFilterChanged()
@@ -299,5 +309,18 @@ class FilterBottomSheet : BottomSheetDialogFragment() {
     override fun onPause() {
         super.onPause()
         mapView.onPause()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putInt("radius", radiusSlider.value.toInt())
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        savedInstanceState?.let {
+            savedRadius = it.getInt("radius", 0)
+            radiusSlider.value = savedRadius.toFloat()
+        }
     }
 } 
