@@ -99,35 +99,69 @@ class HomeActivity : AppCompatActivity() {
     }
 
     private fun handleRentalResponse(rental: Rental, accepted: Boolean) {
-        db.collection("rentals").document(rental.id)
-            .update("status", if (accepted) "ACCEPTED" else "REJECTED")
-            .addOnSuccessListener {
-                if (accepted) {
-                    db.collection("items").document(rental.itemId)
-                        .update("isRented", true)
+        if (accepted) {
+            // Get owner's address first
+            db.collection("users").document(auth.currentUser?.uid ?: "")
+                .get()
+                .addOnSuccessListener { userDoc ->
+                    val address = userDoc.get("address") as? Map<String, Any>
+                    val fullAddress = address?.let {
+                        "${it["streetname"]} ${it["housenumber"]}, ${it["zipcode"]} ${it["city"]}"
+                    } ?: "Address not available"
+
+                    // Update rental status
+                    db.collection("rentals").document(rental.id)
+                        .update("status", "ACCEPTED")
+                        .addOnSuccessListener {
+                            // Update item status
+                            db.collection("items").document(rental.itemId)
+                                .update("isRented", true)
+
+                            // Create notification with address
+                            val notification = hashMapOf(
+                                "userId" to rental.requestedById,
+                                "title" to "Rental Request Accepted",
+                                "message" to "Your request to rent ${rental.itemTitle} has been accepted. You can pick it up at $fullAddress",
+                                "timestamp" to System.currentTimeMillis(),
+                                "read" to false
+                            )
+
+                            db.collection("notifications").add(notification)
+                                .addOnSuccessListener {
+                                    Toast.makeText(this, "Notification sent", Toast.LENGTH_SHORT).show()
+                                    loadRentalRequests()
+                                }
+                                .addOnFailureListener { e ->
+                                    Toast.makeText(this, "Failed to send notification: ${e.message}", Toast.LENGTH_SHORT).show()
+                                }
+                        }
                 }
-                
-                // Create notification for requester
-                val notification = hashMapOf(
-                    "userId" to rental.requestedById,
-                    "title" to "Rental Request ${if (accepted) "Accepted" else "Rejected"}",
-                    "message" to "Your request to rent ${rental.itemTitle} has been ${if (accepted) "accepted" else "rejected"}",
-                    "timestamp" to System.currentTimeMillis(),
-                    "read" to false
-                )
-                
-                db.collection("notifications").add(notification)
-                    .addOnSuccessListener {
-                        Toast.makeText(this, "Notification sent", Toast.LENGTH_SHORT).show()
-                        loadRentalRequests()
-                    }
-                    .addOnFailureListener { e ->
-                        Toast.makeText(this, "Failed to send notification: ${e.message}", Toast.LENGTH_SHORT).show()
-                    }
-            }
-            .addOnFailureListener { e ->
-                Toast.makeText(this, "Failed to update rental: ${e.message}", Toast.LENGTH_SHORT).show()
-            }
+        } else {
+            // Handle rejection (same as before)
+            db.collection("rentals").document(rental.id)
+                .update("status", "REJECTED")
+                .addOnSuccessListener {
+                    val notification = hashMapOf(
+                        "userId" to rental.requestedById,
+                        "title" to "Rental Request Rejected",
+                        "message" to "Your request to rent ${rental.itemTitle} has been rejected",
+                        "timestamp" to System.currentTimeMillis(),
+                        "read" to false
+                    )
+
+                    db.collection("notifications").add(notification)
+                        .addOnSuccessListener {
+                            Toast.makeText(this, "Notification sent", Toast.LENGTH_SHORT).show()
+                            loadRentalRequests()
+                        }
+                        .addOnFailureListener { e ->
+                            Toast.makeText(this, "Failed to send notification: ${e.message}", Toast.LENGTH_SHORT).show()
+                        }
+                }
+                .addOnFailureListener { e ->
+                    Toast.makeText(this, "Failed to update rental: ${e.message}", Toast.LENGTH_SHORT).show()
+                }
+        }
     }
 
     private fun updateNotificationBadge() {
