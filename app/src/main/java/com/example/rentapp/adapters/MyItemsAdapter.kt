@@ -1,54 +1,79 @@
 package com.example.rentapp.adapters
 
 import android.content.Intent
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
 import android.widget.ImageView
+import android.widget.PopupMenu
 import android.widget.TextView
+import androidx.appcompat.content.res.AppCompatResources
+import androidx.appcompat.view.ContextThemeWrapper
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.rentapp.ItemDetailActivity
 import com.example.rentapp.R
 import com.example.rentapp.models.Item
 
-class MyItemsAdapter(private val items: List<Item>) : 
-    RecyclerView.Adapter<MyItemsAdapter.ItemViewHolder>() {
+class MyItemsAdapter(
+    private val items: List<Item>,
+    private val onEditClick: (Item) -> Unit,
+    private val onDeleteClick: (Item) -> Unit
+) : RecyclerView.Adapter<MyItemsAdapter.ViewHolder>() {
 
-    class ItemViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        val image: ImageView = view.findViewById(R.id.itemImage)
         val title: TextView = view.findViewById(R.id.itemTitle)
         val description: TextView = view.findViewById(R.id.itemDescription)
-        val image: ImageView = view.findViewById(R.id.itemImage)
         val status: TextView = view.findViewById(R.id.statusText)
+        val menuButton: ImageButton = view.findViewById(R.id.itemMenuButton)
+
+        init {
+            itemView.setOnClickListener(null)
+            
+            menuButton.setOnClickListener { button ->
+                val wrapper = ContextThemeWrapper(button.context, R.style.PopupMenuStyle)
+                val popupMenu = PopupMenu(wrapper, button)
+                popupMenu.inflate(R.menu.item_options_menu)
+                
+                popupMenu.setOnMenuItemClickListener { menuItem ->
+                    when (menuItem.itemId) {
+                        R.id.action_edit_item -> {
+                            onEditClick(items[adapterPosition])
+                            true
+                        }
+                        R.id.action_delete_item -> {
+                            onDeleteClick(items[adapterPosition])
+                            true
+                        }
+                        else -> false
+                    }
+                }
+                popupMenu.show()
+            }
+        }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.my_item_row, parent, false)
-        return ItemViewHolder(view)
+        return ViewHolder(view)
     }
 
-    override fun onBindViewHolder(holder: ItemViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = items[position]
         
         holder.title.text = item.title
         holder.description.text = item.description
-        holder.status.text = if (item.isRented) "HIRED" else "AVAILABLE"
-        holder.status.setTextColor(if (item.isRented) 
-            holder.itemView.context.getColor(R.color.hired_color)
-            else holder.itemView.context.getColor(R.color.available_color))
-
-        if (item.imageUrl.isNotEmpty()) {
-            Glide.with(holder.image.context)
-                .load(item.imageUrl)
-                .into(holder.image)
-        }
-
-        holder.itemView.setOnClickListener {
-            val intent = Intent(holder.itemView.context, ItemDetailActivity::class.java)
-            intent.putExtra("itemId", item.id)
-            holder.itemView.context.startActivity(intent)
-        }
+        holder.status.text = if(item.isRented) "RENTED" else "AVAILABLE"
+        holder.status.setTextColor(if(item.isRented) Color.RED else Color.GREEN)
+        
+        Glide.with(holder.image)
+            .load(item.imageUrl)
+            .centerCrop()
+            .into(holder.image)
     }
 
     override fun getItemCount() = items.size

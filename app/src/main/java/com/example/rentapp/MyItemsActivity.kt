@@ -1,11 +1,14 @@
 package com.example.rentapp
 
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.widget.EditText
 import android.widget.ImageButton
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
@@ -59,9 +62,45 @@ class MyItemsActivity : AppCompatActivity() {
                     allItems = result.documents.map { doc ->
                         doc.toObject(Item::class.java)?.copy(id = doc.id) ?: Item()
                     }
-                    recyclerView.adapter = MyItemsAdapter(allItems)
+                    setupRecyclerView()
                 }
         }
+    }
+
+    private fun setupRecyclerView() {
+        val adapter = MyItemsAdapter(
+            items = allItems,
+            onEditClick = { item ->
+                val intent = Intent(this, EditItemActivity::class.java).apply {
+                    putExtra("itemId", item.id)
+                }
+                startActivity(intent)
+            },
+            onDeleteClick = { item ->
+                AlertDialog.Builder(this, R.style.AlertDialogTheme)
+                    .setTitle("Delete Item")
+                    .setMessage("Are you sure you want to delete this item?")
+                    .setPositiveButton("Yes") { _, _ ->
+                        deleteItem(item)
+                    }
+                    .setNegativeButton("No", null)
+                    .show()
+            }
+        )
+        recyclerView.adapter = adapter
+    }
+
+    private fun deleteItem(item: Item) {
+        FirebaseFirestore.getInstance().collection("items")
+            .document(item.id)
+            .delete()
+            .addOnSuccessListener {
+                loadUserItems()
+                Toast.makeText(this, "Item deleted", Toast.LENGTH_SHORT).show()
+            }
+            .addOnFailureListener {
+                Toast.makeText(this, "Failed to delete item", Toast.LENGTH_SHORT).show()
+            }
     }
 
     private fun filterItems(query: String) {
@@ -72,6 +111,6 @@ class MyItemsActivity : AppCompatActivity() {
                 it.title.contains(query, ignoreCase = true) 
             }
         }
-        recyclerView.adapter = MyItemsAdapter(filteredItems)
+        setupRecyclerView()
     }
 } 

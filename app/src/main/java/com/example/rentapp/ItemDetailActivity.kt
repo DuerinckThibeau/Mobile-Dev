@@ -1,13 +1,13 @@
 package com.example.rentapp
 
 import android.content.Context
-import android.view.ContextThemeWrapper
+
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.ImageView
-import android.widget.PopupMenu
+
 import android.widget.RatingBar
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
@@ -17,11 +17,11 @@ import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
-import org.osmdroid.views.overlay.Marker
+
 import de.hdodenhof.circleimageview.CircleImageView
-import android.text.SpannableString
-import android.text.style.ForegroundColorSpan
+
 import android.graphics.Color
+import com.example.rentapp.utils.CircleOverlay
 
 class ItemDetailActivity : AppCompatActivity() {
     private lateinit var db: FirebaseFirestore
@@ -42,35 +42,6 @@ class ItemDetailActivity : AppCompatActivity() {
         
         findViewById<ImageButton>(R.id.backButton).setOnClickListener {
             finish()
-        }
-
-        findViewById<ImageButton>(R.id.settingsButton).setOnClickListener { view ->
-            val wrapper = ContextThemeWrapper(this, R.style.PopupMenuTheme)
-            val popup = PopupMenu(wrapper, view)
-            popup.menuInflater.inflate(R.menu.item_menu, popup.menu)
-
-            // Make all menu items white
-            for (i in 0 until popup.menu.size()) {
-                val item = popup.menu.getItem(i)
-                val s = SpannableString(item.title)
-                s.setSpan(ForegroundColorSpan(Color.WHITE), 0, s.length, 0)
-                item.title = s
-            }
-
-            popup.setOnMenuItemClickListener { item ->
-                when (item.itemId) {
-                    R.id.action_edit_item -> {
-                        // Handle edit
-                        true
-                    }
-                    R.id.action_delete_item -> {
-                        // Handle delete
-                        true
-                    }
-                    else -> false
-                }
-            }
-            popup.show()
         }
 
         loadItemDetails(itemId)
@@ -132,10 +103,17 @@ class ItemDetailActivity : AppCompatActivity() {
         val startPoint = GeoPoint(latitude, longitude)
         mapController.setCenter(startPoint)
 
-        val marker = Marker(mapView)
-        marker.position = startPoint
-        marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
-        mapView.overlays.add(marker)
+        // Create a circle overlay instead of a marker
+      val circle = CircleOverlay().apply {
+    position = startPoint
+    fillColor = Color.argb(80, 0, 50, 150)  // Even darker semi-transparent blue
+    strokeColor = Color.argb(130, 0, 70, 170)  // Even darker stroke blue
+    strokeWidth = 2f
+    radius = 300.0  // Radius in meters (adjust as needed)
+}
+        
+        mapView.overlays.add(circle)
+        mapView.invalidate()
     }
 
     override fun onResume() {
