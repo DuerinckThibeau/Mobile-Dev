@@ -4,83 +4,94 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:background="#262626"
-    android:padding="16dp">
+    android:background="#262626">
 
-    <EditText
-        android:id="@+id/searchInput"
+    <org.osmdroid.views.MapView
+        android:id="@+id/mapView"
+        android:layout_width="match_parent"
+        android:layout_height="280dp" />
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/rounded_dark_input"
-        android:hint="Search title..."
-        android:padding="16dp"
-        android:textColor="@color/white"
-        android:textColorHint="#80FFFFFF"
-        android:layout_marginBottom="16dp"/>
+        android:orientation="vertical"
+        android:padding="16dp">
 
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/rounded_dark_input"
-        android:layout_marginBottom="16dp">
+        <TextView
+            android:id="@+id/radiusLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Distance: 0 km"
+            android:textColor="@color/white"
+            android:layout_marginBottom="8dp"/>
 
-        <Spinner
-            android:id="@+id/categoryFilter"
+        <com.google.android.material.slider.Slider
+            android:id="@+id/radiusSlider"
             android:layout_width="match_parent"
-            android:layout_height="52dp"
-            android:background="@null"
-            android:paddingStart="16dp"
-            android:paddingEnd="40dp"/>
+            android:layout_height="wrap_content"
+            android:valueFrom="0"
+            android:valueTo="30"
+            android:stepSize="1"
+            android:value="0"
+            android:layout_marginBottom="16dp"
+            app:thumbColor="@color/white"
+            app:trackColorActive="@color/white"
+            app:trackColorInactive="#80FFFFFF"/>
 
-        <ImageView
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_gravity="end|center_vertical"
-            android:layout_marginEnd="16dp"
-            android:src="@drawable/ic_arrow_down"
-            android:alpha="0.5"/>
-    </FrameLayout>
-
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/rounded_dark_input">
-
-        <Spinner
-            android:id="@+id/locationFilter"
+        <EditText
+            android:id="@+id/searchInput"
             android:layout_width="match_parent"
-            android:layout_height="52dp"
-            android:background="@null"
-            android:paddingStart="16dp"
-            android:paddingEnd="40dp"/>
+            android:layout_height="wrap_content"
+            android:background="@drawable/rounded_dark_input"
+            android:hint="Search title..."
+            android:padding="16dp"
+            android:textColor="@color/white"
+            android:textColorHint="#80FFFFFF"
+            android:layout_marginBottom="16dp"/>
 
-        <ImageView
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:layout_gravity="end|center_vertical"
-            android:layout_marginEnd="16dp"
-            android:src="@drawable/ic_arrow_down"
-            android:alpha="0.5"/>
-    </FrameLayout>
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/rounded_dark_input"
+            android:layout_marginBottom="16dp">
 
-    <TextView
-        android:id="@+id/radiusLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Distance: 0 km"
-        android:textColor="@color/white"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="8dp"/>
+            <Spinner
+                android:id="@+id/categoryFilter"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:background="@null"
+                android:paddingStart="16dp"
+                android:paddingEnd="40dp"/>
 
-    <com.google.android.material.slider.Slider
-        android:id="@+id/radiusSlider"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:valueFrom="0"
-        android:valueTo="30"
-        android:stepSize="1"
-        android:value="0"
-        app:thumbColor="@color/white"
-        app:trackColorActive="@color/white"
-        app:trackColorInactive="#80FFFFFF"/>
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="end|center_vertical"
+                android:layout_marginEnd="16dp"
+                android:src="@drawable/ic_arrow_down"
+                android:alpha="0.5"/>
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/rounded_dark_input">
+
+            <Spinner
+                android:id="@+id/locationFilter"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:background="@null"
+                android:paddingStart="16dp"
+                android:paddingEnd="40dp"/>
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="end|center_vertical"
+                android:layout_marginEnd="16dp"
+                android:src="@drawable/ic_arrow_down"
+                android:alpha="0.5"/>
+        </FrameLayout>
+    </LinearLayout>
 </LinearLayout> 
