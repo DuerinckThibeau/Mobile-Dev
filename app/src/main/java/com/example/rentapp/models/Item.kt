@@ -5,6 +5,7 @@ data class Item(
     val title: String = "",
     val description: String = "",
     val imageUrl: String = "",
+    val price: String = "0",
     val createdBy: String = "",
     val createdByName: String = "",
     val createdByProfilePic: String = "",
