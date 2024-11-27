@@ -93,6 +93,9 @@ class ItemDetailActivity : AppCompatActivity() {
                     if (geoPoint != null) {
                         setupMap(geoPoint.latitude, geoPoint.longitude)
                     }
+
+                    val price = document.getString("price") ?: "0"
+                    findViewById<TextView>(R.id.itemPrice).text = if (price == "0") "FREE" else "€$price"
                 }
             }
     }
