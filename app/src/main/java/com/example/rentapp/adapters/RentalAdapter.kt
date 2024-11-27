@@ -1,5 +1,6 @@
 package com.example.rentapp.adapters
 
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.rentapp.R
 import com.example.rentapp.models.Rental
+import com.example.rentapp.RentalDetailActivity
 import de.hdodenhof.circleimageview.CircleImageView
 
 class RentalAdapter(
@@ -59,6 +61,13 @@ class RentalAdapter(
             Glide.with(holder.userImage.context)
                 .load(rental.requestedByProfilePic)
                 .into(holder.userImage)
+        }
+
+        holder.itemView.setOnClickListener {
+            val intent = Intent(holder.itemView.context, RentalDetailActivity::class.java)
+            intent.putExtra("rentalId", rental.id)
+            intent.putExtra("isOwner", true)
+            holder.itemView.context.startActivity(intent)
         }
     }
 

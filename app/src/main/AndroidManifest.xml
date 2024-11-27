@@ -45,5 +45,6 @@
         <activity android:name=".MyItemsActivity" android:exported="false" />
         <activity android:name=".NotificationsActivity" android:exported="false" />
         <activity android:name=".EditItemActivity" android:exported="false" />
+        <activity android:name=".RentalDetailActivity" android:exported="false" />
     </application>
 </manifest>
