@@ -33,6 +33,7 @@ class RentalDetailActivity : AppCompatActivity() {
         val rentalId = intent.getStringExtra("rentalId") ?: return
         val isOwner = intent.getBooleanExtra("isOwner", false)
         
+        // Add back button functionality
         findViewById<ImageButton>(R.id.backButton).setOnClickListener {
             finish()
         }
