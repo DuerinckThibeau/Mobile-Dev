@@ -22,6 +22,7 @@ class ItemGridAdapter(private val items: List<Item>) :
         val image: ImageView = view.findViewById(R.id.itemImage)
         val userImage: CircleImageView = view.findViewById(R.id.userImage)
         val userName: TextView = view.findViewById(R.id.userName)
+        val price: TextView = view.findViewById(R.id.itemPrice)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemViewHolder {
@@ -36,6 +37,9 @@ class ItemGridAdapter(private val items: List<Item>) :
         holder.title.text = item.title
         holder.description.text = item.description
         holder.userName.text = item.createdBy
+        
+        // Set price text
+        holder.price.text = if (item.price == "0") "FREE" else "€${item.price}"
 
         if (item.imageUrl.isNotEmpty()) {
             Glide.with(holder.image.context)

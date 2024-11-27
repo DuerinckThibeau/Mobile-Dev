@@ -14,6 +14,7 @@ import de.hdodenhof.circleimageview.CircleImageView
 
 class RentalAdapter(
     private val rentals: List<Rental>,
+    private val showActions: Boolean = false,
     private val onResponseClick: (Rental, Boolean) -> Unit
 ) : RecyclerView.Adapter<RentalAdapter.RentalViewHolder>() {
 
@@ -23,14 +24,15 @@ class RentalAdapter(
         val userImage: CircleImageView = view.findViewById(R.id.userImage)
         val userName: TextView = view.findViewById(R.id.userName)
         val dateRange: TextView = view.findViewById(R.id.dateRange)
-        val message: TextView = view.findViewById(R.id.message)
-        val acceptButton: Button = view.findViewById(R.id.acceptButton)
-        val rejectButton: Button = view.findViewById(R.id.rejectButton)
+        val message: TextView? = view.findViewById(R.id.message)
+        val acceptButton: Button? = view.findViewById(R.id.acceptButton)
+        val rejectButton: Button? = view.findViewById(R.id.rejectButton)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RentalViewHolder {
+        val layoutId = if (showActions) R.layout.rental_request_item else R.layout.rental_item
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.rental_request_item, parent, false)
+            .inflate(layoutId, parent, false)
         return RentalViewHolder(view)
     }
 
@@ -40,7 +42,12 @@ class RentalAdapter(
         holder.itemTitle.text = rental.itemTitle
         holder.userName.text = rental.requestedByName
         holder.dateRange.text = "${rental.startDate} - ${rental.endDate}"
-        holder.message.text = rental.message
+        
+        if (showActions) {
+            holder.message?.text = rental.message
+            holder.acceptButton?.setOnClickListener { onResponseClick(rental, true) }
+            holder.rejectButton?.setOnClickListener { onResponseClick(rental, false) }
+        }
 
         if (rental.itemImage.isNotEmpty()) {
             Glide.with(holder.itemImage.context)
@@ -53,9 +60,6 @@ class RentalAdapter(
                 .load(rental.requestedByProfilePic)
                 .into(holder.userImage)
         }
-
-        holder.acceptButton.setOnClickListener { onResponseClick(rental, true) }
-        holder.rejectButton.setOnClickListener { onResponseClick(rental, false) }
     }
 
     override fun getItemCount() = rentals.size

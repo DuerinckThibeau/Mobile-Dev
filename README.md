@@ -8,8 +8,8 @@
 - [x] Items toevoegen (beschrijving, foto, prijs, beschikbaarheid)
 - [x] Items bekijken op categorie en locatie
 - [x] Item reserveren
-- [ ] Gereserveerde items bekijken (Verhuurders)
-- [ ] Gereserveerde items bekijken (Huurders)
+- [x] Gereserveerde items bekijken (Verhuurders)
+- [x] Gereserveerde items bekijken (Huurders)
 
 #### Nice to Haves
 
