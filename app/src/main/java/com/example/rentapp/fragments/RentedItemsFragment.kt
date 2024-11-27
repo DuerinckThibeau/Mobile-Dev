@@ -21,7 +21,9 @@ class RentedItemsFragment : BaseRentalFragment() {
                 .whereEqualTo("status", "ACCEPTED")
                 .get()
                 .addOnSuccessListener { result ->
-                    val rentals = result.toObjects(Rental::class.java)
+                    val rentals = result.documents.map { doc ->
+                        doc.toObject(Rental::class.java)?.copy(id = doc.id) ?: Rental()
+                    }
                     updateEmptyState(rentals)
                     recyclerView.adapter = RentalAdapter(
                         rentals = rentals,

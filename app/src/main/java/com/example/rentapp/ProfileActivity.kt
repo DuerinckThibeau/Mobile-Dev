@@ -19,6 +19,8 @@ import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
+import android.widget.RatingBar
+import android.view.View
 
 class ProfileActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
@@ -117,6 +119,9 @@ class ProfileActivity : AppCompatActivity() {
                         if (geoPoint != null) {
                             setupMap(geoPoint.latitude, geoPoint.longitude)
                         }
+
+                        // Load user rating
+                        loadUserRating(user.uid)
                     }
                 }
         }
@@ -181,6 +186,28 @@ class ProfileActivity : AppCompatActivity() {
                     "${it.substring(0,4)} ${it.substring(4,6)} ${it.substring(6,8)} ${it.substring(8)}"
                 } else {
                     it  
+                }
+            }
+    }
+
+    private fun loadUserRating(userId: String) {
+        val ratingBar = findViewById<RatingBar>(R.id.userRating)
+        val ratingText = findViewById<TextView>(R.id.ratingText)
+        
+        db.collection("reviews")
+            .whereEqualTo("userId", userId)
+            .get()
+            .addOnSuccessListener { documents ->
+                if (!documents.isEmpty) {
+                    val totalRating = documents.sumOf { it.getDouble("rating")?.toDouble() ?: 0.0 }
+                    val averageRating = totalRating / documents.size()
+                    ratingBar.rating = averageRating.toFloat()
+                    ratingText.text = String.format("%.1f (%d reviews)", averageRating, documents.size())
+                    ratingBar.visibility = View.VISIBLE
+                    ratingText.visibility = View.VISIBLE
+                } else {
+                    ratingBar.visibility = View.GONE
+                    ratingText.visibility = View.GONE
                 }
             }
     }
