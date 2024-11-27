@@ -1,6 +1,7 @@
 package com.example.rentapp
 
 import android.app.AlertDialog
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.view.View
@@ -160,14 +161,47 @@ class RentalDetailActivity : AppCompatActivity() {
 
     private fun updateRentalStatus(rentalId: String) {
         db.collection("rentals").document(rentalId)
-            .update("status", "COMPLETED")
-            .addOnSuccessListener {
-                Toast.makeText(this, "Return confirmed", Toast.LENGTH_SHORT).show()
+            .get()
+            .addOnSuccessListener { rentalDoc ->
+                val renterId = rentalDoc.getString("requestedById")
+                val itemTitle = rentalDoc.getString("itemTitle")
+                
+                // Update status to completed
+                rentalDoc.reference.update("status", "COMPLETED")
+                    .addOnSuccessListener {
+                        // Send notification to renter
+                        val notification = hashMapOf(
+                            "userId" to renterId,
+                            "title" to "Item Return Confirmed",
+                            "message" to "The owner has confirmed the return of $itemTitle",
+                            "timestamp" to System.currentTimeMillis(),
+                            "read" to false
+                        )
+
+                        db.collection("notifications")
+                            .add(notification)
+                            .addOnSuccessListener {
+                                showReviewDialog(renterId ?: "", itemTitle ?: "")
+                            }
+                    }
+            }
+    }
+
+    private fun showReviewDialog(renterId: String, itemTitle: String) {
+        AlertDialog.Builder(this, R.style.DarkAlertDialog)
+            .setTitle("Rate Renter")
+            .setMessage("Would you like to rate this renter?")
+            .setPositiveButton("YES") { _, _ ->
+                val intent = Intent(this, AddReviewActivity::class.java)
+                intent.putExtra("userId", renterId)
+                intent.putExtra("itemTitle", itemTitle)
+                startActivity(intent)
                 finish()
             }
-            .addOnFailureListener { e ->
-                Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+            .setNegativeButton("NO") { _, _ ->
+                finish()
             }
+            .show()
     }
 
     override fun onResume() {
