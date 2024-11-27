@@ -22,11 +22,16 @@ class RentedOutItemsFragment : BaseRentalFragment() {
                 .get()
                 .addOnSuccessListener { result ->
                     val rentals = result.toObjects(Rental::class.java)
+                    updateEmptyState(rentals)
                     recyclerView.adapter = RentalAdapter(
                         rentals = rentals,
                         showActions = false
                     ) { _, _ -> }
                 }
         }
+    }
+
+    override fun getEmptyStateMessage(): String {
+        return "Not currently renting out anything."
     }
 }

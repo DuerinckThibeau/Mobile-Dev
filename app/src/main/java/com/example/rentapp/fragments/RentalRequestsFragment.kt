@@ -23,6 +23,7 @@ class RentalRequestsFragment : BaseRentalFragment() {
                 .get()
                 .addOnSuccessListener { result ->
                     val rentals = result.toObjects(Rental::class.java)
+                    updateEmptyState(rentals)
                     recyclerView.adapter = RentalAdapter(
                         rentals = rentals,
                         showActions = true
@@ -82,5 +83,9 @@ class RentalRequestsFragment : BaseRentalFragment() {
                         }
                 }
         }
+    }
+
+    override fun getEmptyStateMessage(): String {
+        return "No new requests. You're all caught up!"
     }
 } 
