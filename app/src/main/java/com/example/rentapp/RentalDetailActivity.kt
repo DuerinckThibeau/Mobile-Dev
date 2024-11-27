@@ -1,10 +1,14 @@
 package com.example.rentapp
 
+import android.app.AlertDialog
+import android.graphics.Color
 import android.os.Bundle
 import android.view.View
+import android.widget.Button
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
@@ -43,6 +47,8 @@ class RentalDetailActivity : AppCompatActivity() {
     }
 
     private fun loadRentalDetails(rentalId: String, isOwner: Boolean) {
+        val confirmReturnButton = findViewById<Button>(R.id.confirmReturnButton)
+        
         db.collection("rentals").document(rentalId)
             .get()
             .addOnSuccessListener { rentalDoc ->
@@ -71,6 +77,16 @@ class RentalDetailActivity : AppCompatActivity() {
                     } else {
                         // Current user is the renter, show owner's info
                         loadUserDetails(ownerId ?: "", false)
+                    }
+
+                    // Only show confirm return button if current user is the owner AND rental is accepted
+                    if (currentUserId == ownerId && rentalDoc.getString("status") == "ACCEPTED") {
+                        confirmReturnButton.visibility = View.VISIBLE
+                        confirmReturnButton.setOnClickListener {
+                            showConfirmReturnDialog(rentalId)
+                        }
+                    } else {
+                        confirmReturnButton.visibility = View.GONE
                     }
                 }
             }
@@ -125,6 +141,33 @@ class RentalDetailActivity : AppCompatActivity() {
         marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
         mapView.overlays.add(marker)
         mapView.invalidate()
+    }
+
+    private fun showConfirmReturnDialog(rentalId: String) {
+        val dialog = AlertDialog.Builder(this, R.style.DarkAlertDialog)
+            .setTitle("Confirm Return")
+            .setMessage("You're about to confirm the item has been returned to you.")
+            .setPositiveButton("CONFIRM") { _, _ ->
+                updateRentalStatus(rentalId)
+            }
+            .setNegativeButton("CANCEL", null)
+            .show()
+
+        // Set text colors
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.WHITE)
+        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(Color.WHITE)
+    }
+
+    private fun updateRentalStatus(rentalId: String) {
+        db.collection("rentals").document(rentalId)
+            .update("status", "COMPLETED")
+            .addOnSuccessListener {
+                Toast.makeText(this, "Return confirmed", Toast.LENGTH_SHORT).show()
+                finish()
+            }
+            .addOnFailureListener { e ->
+                Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
     }
 
     override fun onResume() {
