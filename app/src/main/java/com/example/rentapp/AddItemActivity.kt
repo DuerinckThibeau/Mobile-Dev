@@ -22,11 +22,12 @@ import com.google.firebase.storage.FirebaseStorage
 import android.widget.FrameLayout
 import android.widget.ImageView
 import com.example.rentapp.utils.GeocodingUtil
+import com.google.android.material.textfield.TextInputEditText
 
 class AddItemActivity : AppCompatActivity() {
-    private lateinit var priceInput: EditText
-    private lateinit var titleInput: EditText
-    private lateinit var descriptionInput: EditText
+    private lateinit var priceInput: TextInputEditText
+    private lateinit var titleInput: TextInputEditText
+    private lateinit var descriptionInput: TextInputEditText
     private lateinit var imageContainer: FrameLayout
     private lateinit var selectedImageView: ImageView
     private lateinit var auth: FirebaseAuth

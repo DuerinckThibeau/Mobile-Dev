@@ -95,7 +95,7 @@ class ItemDetailActivity : AppCompatActivity() {
                     }
 
                     val price = document.getString("price") ?: "0"
-                    findViewById<TextView>(R.id.itemPrice).text = if (price == "0") "FREE" else "€$price"
+                    findViewById<TextView>(R.id.itemPrice).text = "€${price}/day"
                 }
             }
     }
