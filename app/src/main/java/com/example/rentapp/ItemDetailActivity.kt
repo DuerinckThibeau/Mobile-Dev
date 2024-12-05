@@ -96,6 +96,12 @@ class ItemDetailActivity : AppCompatActivity() {
 
                     val price = document.getString("price") ?: "0"
                     findViewById<TextView>(R.id.itemPrice).text = "€${price}/day"
+
+                    // Get the owner's ID and load their rating
+                    val ownerId = document.getString("createdById") ?: ""
+                    if (ownerId.isNotEmpty()) {
+                        loadUserRating(ownerId)
+                    }
                 }
             }
     }
@@ -127,5 +133,32 @@ class ItemDetailActivity : AppCompatActivity() {
     override fun onPause() {
         super.onPause()
         mapView.onPause()
+    }
+
+    private fun loadUserRating(userId: String) {
+        val ratingBar = findViewById<RatingBar>(R.id.userRating)
+        val ratingText = findViewById<TextView>(R.id.ratingText)
+        
+        db.collection("reviews")
+            .whereEqualTo("userId", userId)
+            .get()
+            .addOnSuccessListener { documents ->
+                if (!documents.isEmpty) {
+                    val totalRating = documents.sumOf { it.getDouble("rating")?.toDouble() ?: 0.0 }
+                    val averageRating = totalRating / documents.size()
+                    ratingBar.rating = averageRating.toFloat()
+                    ratingBar.stepSize = 0.5f
+                    ratingText.text = String.format("%.1f (%d reviews)", averageRating, documents.size())
+                    ratingBar.visibility = View.VISIBLE
+                    ratingText.visibility = View.VISIBLE
+                } else {
+                    ratingBar.visibility = View.GONE
+                    ratingText.visibility = View.GONE
+                }
+            }
+            .addOnFailureListener {
+                ratingBar.visibility = View.GONE
+                ratingText.visibility = View.GONE
+            }
     }
 } 
