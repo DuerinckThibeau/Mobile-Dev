@@ -48,7 +48,6 @@ class AddReviewActivity : AppCompatActivity() {
             return
         }
 
-        // Get reviewer's name first
         db.collection("users").document(currentUser.uid)
             .get()
             .addOnSuccessListener { userDoc ->
@@ -69,7 +68,6 @@ class AddReviewActivity : AppCompatActivity() {
                     "timestamp" to System.currentTimeMillis()
                 )
 
-                // Log the review data
                 android.util.Log.d("AddReview", "Attempting to submit review: $review")
 
                 db.collection("reviews")

@@ -65,7 +65,6 @@ class EditItemActivity : AppCompatActivity() {
                     findViewById<TextInputEditText>(R.id.priceInput).setText(document.getString("price"))
                     currentImageUrl = document.getString("imageUrl") ?: ""
                     
-                    // Load image using Glide
                     Glide.with(this)
                         .load(currentImageUrl)
                         .into(findViewById(R.id.itemImage))
@@ -92,14 +91,12 @@ class EditItemActivity : AppCompatActivity() {
             return
         }
 
-        // Show loading indicator
         val loadingDialog = AlertDialog.Builder(this)
             .setMessage("Saving changes...")
             .setCancelable(false)
             .create()
         loadingDialog.show()
 
-        // If there's a new image, upload it first
         if (selectedImageUri != null) {
             val imageRef = storage.reference.child("items/${UUID.randomUUID()}")
             imageRef.putFile(selectedImageUri!!)
@@ -117,7 +114,6 @@ class EditItemActivity : AppCompatActivity() {
                     Toast.makeText(this, "Failed to upload image", Toast.LENGTH_SHORT).show()
                 }
         } else {
-            // No new image, just update the text fields
             updateItem(title, description, currentImageUrl, price, loadingDialog)
         }
     }

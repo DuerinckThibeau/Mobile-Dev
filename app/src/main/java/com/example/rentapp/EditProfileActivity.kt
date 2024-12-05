@@ -126,13 +126,11 @@ class EditProfileActivity : AppCompatActivity() {
         passwordHeader.setOnClickListener {
             val isVisible = passwordFields.visibility == View.VISIBLE
             
-            // Animate chevron
             passwordChevron.animate()
                 .rotation(if (isVisible) 0f else 180f)
                 .setDuration(300)
                 .start()
 
-            // Animate fields
             if (isVisible) {
                 passwordFields.animate()
                     .alpha(0f)
@@ -252,7 +250,6 @@ class EditProfileActivity : AppCompatActivity() {
                 "phone" to phoneInput.text.toString()
             )
 
-            // Update Firestore in background
             db.collection("users").document(user.uid)
                 .update(userProfile as Map<String, Any>)
                 .addOnSuccessListener {

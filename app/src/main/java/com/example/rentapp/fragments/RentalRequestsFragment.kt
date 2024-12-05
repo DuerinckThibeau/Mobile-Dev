@@ -39,7 +39,6 @@ class RentalRequestsFragment : BaseRentalFragment() {
         currentUser?.let { user ->
             val status = if (accepted) "ACCEPTED" else "REJECTED"
             
-            // Get owner's address first
             db.collection("users").document(user.uid)
                 .get()
                 .addOnSuccessListener { userDoc ->
@@ -48,7 +47,6 @@ class RentalRequestsFragment : BaseRentalFragment() {
                         "${address["streetname"]} ${address["housenumber"]}, ${address["zipcode"]} ${address["city"]}"
                     } else ""
 
-                    // Update rental status
                     db.collection("rentals")
                         .whereEqualTo("itemId", rental.itemId)
                         .whereEqualTo("requestedById", rental.requestedById)
@@ -58,7 +56,6 @@ class RentalRequestsFragment : BaseRentalFragment() {
                             for (document in documents) {
                                 document.reference.update("status", status)
                                     .addOnSuccessListener {
-                                        // Create notification with address
                                         val notification = hashMapOf(
                                             "userId" to rental.requestedById,
                                             "title" to "Rental Request ${if (accepted) "Accepted" else "Rejected"}",

@@ -114,13 +114,11 @@ class ProfileActivity : AppCompatActivity() {
                                 .into(profileImageView)
                         }
 
-                        // Setup map with user's location
                         val geoPoint = address?.get("geopoint") as? com.google.firebase.firestore.GeoPoint
                         if (geoPoint != null) {
                             setupMap(geoPoint.latitude, geoPoint.longitude)
                         }
 
-                        // Load user rating
                         loadUserRating(user.uid)
                     }
                 }

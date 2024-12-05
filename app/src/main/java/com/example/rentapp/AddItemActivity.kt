@@ -182,7 +182,6 @@ class AddItemActivity : AppCompatActivity() {
                         "isRented" to false
                     )
 
-                    // Create item in database
                     db.collection("items")
                         .add(item)
                         .addOnSuccessListener {
@@ -210,7 +209,6 @@ class AddItemActivity : AppCompatActivity() {
         imageRef.putFile(imageUri)
             .addOnSuccessListener {
                 imageRef.downloadUrl.addOnSuccessListener { uri ->
-                    // Update the item with the image URL
                     db.collection("items").document(itemId)
                         .update("imageUrl", uri.toString())
                         .addOnSuccessListener {

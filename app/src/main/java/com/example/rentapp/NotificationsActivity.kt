@@ -32,7 +32,6 @@ class NotificationsActivity : AppCompatActivity() {
         recyclerView = findViewById(R.id.notificationsRecyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
 
-        // Add swipe-to-delete functionality with background
         val swipeHandler = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
             override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, 
                               target: RecyclerView.ViewHolder): Boolean = false
@@ -56,7 +55,6 @@ class NotificationsActivity : AppCompatActivity() {
                 val deleteIcon = ContextCompat.getDrawable(this@NotificationsActivity, R.drawable.ic_delete)
                 val background = ColorDrawable(Color.RED)
                 
-                // Draw red background
                 background.setBounds(
                     itemView.right + dX.toInt(),
                     itemView.top,
@@ -65,7 +63,6 @@ class NotificationsActivity : AppCompatActivity() {
                 )
                 background.draw(c)
 
-                // Only draw delete icon when enough space is available (e.g., swiped more than half the icon width)
                 if (dX < -deleteIcon!!.intrinsicWidth * 2) { 
                     val iconMargin = (itemView.height - deleteIcon.intrinsicHeight) / 2
                     val iconLeft = itemView.right - iconMargin - deleteIcon.intrinsicWidth
@@ -124,7 +121,7 @@ class NotificationsActivity : AppCompatActivity() {
         db.collection("notifications").document(notificationId)
             .update("read", true)
             .addOnSuccessListener {
-                loadNotifications()  // Reload to update the UI
+                loadNotifications()
             }
     }
 
@@ -133,11 +130,11 @@ class NotificationsActivity : AppCompatActivity() {
             .delete()
             .addOnSuccessListener {
                 Toast.makeText(this, "Notification deleted", Toast.LENGTH_SHORT).show()
-                loadNotifications()  // Reload the list
+                loadNotifications()
             }
             .addOnFailureListener { e ->
                 Toast.makeText(this, "Error deleting notification: ${e.message}", Toast.LENGTH_SHORT).show()
-                loadNotifications()  // Reload to restore the item in case of failure
+                loadNotifications()
             }
     }
 } 

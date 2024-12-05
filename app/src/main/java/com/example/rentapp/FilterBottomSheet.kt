@@ -76,7 +76,6 @@ class FilterBottomSheet : BottomSheetDialogFragment() {
     }
 
     private fun setupSpinners() {
-        // Setup Category Spinner
         val categories = mutableListOf("Filter on category")
         categories.addAll(resources.getStringArray(R.array.categories_array))
         
@@ -109,7 +108,6 @@ class FilterBottomSheet : BottomSheetDialogFragment() {
         categoryAdapter.setDropDownViewResource(R.layout.spinner_dropdown_item)
         categorySpinner.adapter = categoryAdapter
 
-        // Setup Location Spinner with same styling
         val db = FirebaseFirestore.getInstance()
         db.collection("items")
             .get()
@@ -149,7 +147,6 @@ class FilterBottomSheet : BottomSheetDialogFragment() {
                 locationSpinner.adapter = locationAdapter
             }
 
-        // Add listeners for both spinners
         categorySpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                 view?.let {
@@ -182,8 +179,8 @@ class FilterBottomSheet : BottomSheetDialogFragment() {
     }
 
     private fun setupRadiusSlider() {
-        radiusSlider.isEnabled = false  // Disable initially
-        radiusSlider.value = savedRadius.toFloat()  // Set the initial value from arguments
+        radiusSlider.isEnabled = false 
+        radiusSlider.value = savedRadius.toFloat()
         radiusLabel.text = "Distance: $savedRadius km"
         
         radiusSlider.addOnChangeListener { _, value, _ ->
@@ -204,12 +201,10 @@ class FilterBottomSheet : BottomSheetDialogFragment() {
                 .addOnSuccessListener { document ->
                     val address = document.get("address") as? Map<String, Any>
                     userLocation = address?.get("geopoint") as? com.google.firebase.firestore.GeoPoint
-                    // Enable slider only if we have a valid location
                     radiusSlider.isEnabled = (userLocation != null)
                     if (userLocation == null) {
                         radiusLabel.text = "Distance filtering unavailable"
                     } else {
-                        // Update map with initial user location
                         updateMapRadius(radiusSlider.value.toInt())
                     }
                 }
@@ -236,11 +231,9 @@ class FilterBottomSheet : BottomSheetDialogFragment() {
         mapView.setTileSource(TileSourceFactory.MAPNIK)
         mapView.setMultiTouchControls(true)
         
-        // Initialize with default settings
         val mapController = mapView.controller
         mapController.setZoom(currentZoom)
         
-        // If we already have the user location, update the map
         userLocation?.let { location ->
             updateMapRadius(radiusSlider.value.toInt())
         }
@@ -248,25 +241,20 @@ class FilterBottomSheet : BottomSheetDialogFragment() {
 
     private fun updateMapRadius(radiusKm: Int) {
         userLocation?.let { location ->
-            // Remove existing overlays
             circleOverlay?.let { mapView.overlays.remove(it) }
             marker?.let { mapView.overlays.remove(it) }
             
             val userGeoPoint = org.osmdroid.util.GeoPoint(location.latitude, location.longitude)
             
             if (radiusKm == 0) {
-                // Show marker for user location
                 marker = org.osmdroid.views.overlay.Marker(mapView).apply {
                     position = userGeoPoint
                     setAnchor(org.osmdroid.views.overlay.Marker.ANCHOR_CENTER, org.osmdroid.views.overlay.Marker.ANCHOR_BOTTOM)
                     icon = resources.getDrawable(R.drawable.ic_location, null)
                 }
                 mapView.overlays.add(marker)
-                
-                // Set zoom for marker view
                 currentZoom = 15.0
             } else {
-                // Show radius circle
                 val radiusMeters = radiusKm * 1000.0
                 
                 circleOverlay = CircleOverlay().apply {
@@ -279,11 +267,9 @@ class FilterBottomSheet : BottomSheetDialogFragment() {
                 
                 mapView.overlays.add(circleOverlay)
                 
-                // Calculate appropriate zoom level
                 currentZoom = calculateZoomLevel(radiusKm)
             }
             
-            // Update map view
             mapView.controller.setZoom(currentZoom)
             mapView.controller.setCenter(userGeoPoint)
             mapView.invalidate()
@@ -291,7 +277,6 @@ class FilterBottomSheet : BottomSheetDialogFragment() {
     }
 
     private fun calculateZoomLevel(radiusKm: Int): Double {
-        // This formula provides a rough estimate for appropriate zoom level
         return when {
             radiusKm <= 1 -> 15.0
             radiusKm <= 5 -> 13.0

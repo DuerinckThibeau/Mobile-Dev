@@ -13,7 +13,7 @@ class CircleOverlay : Overlay() {
     var fillColor: Int = 0
     var strokeColor: Int = 0
     var strokeWidth: Float = 0f
-    var radius: Double = 0.0  // Radius in meters
+    var radius: Double = 0.0
 
     private val paint = Paint().apply {
         isAntiAlias = true
@@ -32,14 +32,11 @@ class CircleOverlay : Overlay() {
             val proj = mapView.projection
             val point = proj.toPixels(pos, null)
             
-            // Convert radius from meters to pixels
             val radiusInPixels = getRadiusInPixels(proj, pos, radius)
             
-            // Draw fill
             paint.color = fillColor
             canvas.drawCircle(point.x.toFloat(), point.y.toFloat(), radiusInPixels, paint)
             
-            // Draw stroke
             strokePaint.color = strokeColor
             strokePaint.strokeWidth = strokeWidth
             canvas.drawCircle(point.x.toFloat(), point.y.toFloat(), radiusInPixels, strokePaint)
@@ -47,13 +44,12 @@ class CircleOverlay : Overlay() {
     }
 
     private fun getRadiusInPixels(proj: Projection, center: GeoPoint, radiusInMeters: Double): Float {
-        // Calculate meters per pixel at current zoom level and latitude
         val metersPerPixel = calculateMetersPerPixel(center.latitude, proj.zoomLevel)
         return (radiusInMeters / metersPerPixel).toFloat()
     }
 
     private fun calculateMetersPerPixel(latitude: Double, zoom: Double): Double {
-        val earthRadius = 6378137.0 // Earth's radius in meters
+        val earthRadius = 6378137.0 
         val latRad = Math.toRadians(latitude)
         return cos(latRad) * 2 * PI * earthRadius / (256 * 2.0.pow(zoom))
     }

@@ -57,7 +57,6 @@ class ListActivity : AppCompatActivity(), FilterBottomSheet.FilterListener {
                 recyclerView.adapter = ItemGridAdapter(allItems)
             }
             .addOnFailureListener { exception ->
-                // Handle failure
             }
     }
 
@@ -133,7 +132,7 @@ class ListActivity : AppCompatActivity(), FilterBottomSheet.FilterListener {
     }
 
     private fun calculateDistance(userLat: Double, userLng: Double, itemLat: Double, itemLng: Double): Int {
-        val r = 6371 // Earth's radius in km
+        val r = 6371
         val dLat = Math.toRadians(itemLat - userLat)
         val dLng = Math.toRadians(itemLng - userLng)
         val a = Math.sin(dLat/2) * Math.sin(dLat/2) +

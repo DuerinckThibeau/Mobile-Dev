@@ -56,7 +56,6 @@ class RegisterActivity : AppCompatActivity() {
             auth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this) { task ->
                     if (task.isSuccessful) {
-                        // Registration successful, navigate to profile setup
                         startActivity(Intent(this, ProfileSetupActivity::class.java))
                         finish()
                     } else {
@@ -66,7 +65,6 @@ class RegisterActivity : AppCompatActivity() {
                 }
         }
 
-        // Set up password visibility toggles
         togglePassword.setOnClickListener {
             val isPasswordVisible = passwordInput.transformationMethod == null
             val newTransformation = if (isPasswordVisible) {
@@ -77,11 +75,9 @@ class RegisterActivity : AppCompatActivity() {
                 null
             }
             
-            // Apply to both password fields
             passwordInput.transformationMethod = newTransformation
             confirmPasswordInput.transformationMethod = newTransformation
             
-            // Maintain cursor position
             passwordInput.setSelection(passwordInput.text.length)
             confirmPasswordInput.setSelection(confirmPasswordInput.text.length)
         }
