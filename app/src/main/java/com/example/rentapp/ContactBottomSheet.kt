@@ -92,7 +92,6 @@ class ContactBottomSheet : BottomSheetDialogFragment() {
 
             val db = FirebaseFirestore.getInstance()
             
-            // Get current user's details
             db.collection("users").document(currentUser.uid)
                 .get()
                 .addOnSuccessListener { userDoc ->
@@ -100,7 +99,6 @@ class ContactBottomSheet : BottomSheetDialogFragment() {
                     val lastName = userDoc.getString("lastname") ?: ""
                     val profilePic = userDoc.getString("profilepicture") ?: ""
 
-                    // Get item details
                     arguments?.getString("itemId")?.let { itemId ->
                         db.collection("items").document(itemId)
                             .get()
@@ -140,7 +138,6 @@ class ContactBottomSheet : BottomSheetDialogFragment() {
         val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
         val endDate = dateFormat.parse(endDateStr)
         
-        // Calculate reminder date (1 day before end date)
         val reminderDate = Calendar.getInstance().apply {
             time = endDate
             add(Calendar.DAY_OF_MONTH, -1)
@@ -148,7 +145,6 @@ class ContactBottomSheet : BottomSheetDialogFragment() {
 
         val reminderTimestamp = reminderDate.time
 
-        // Create reminder notification for owner
         val ownerReminder = hashMapOf(
             "userId" to rental["ownerId"],
             "title" to "Return Reminder",
@@ -158,7 +154,6 @@ class ContactBottomSheet : BottomSheetDialogFragment() {
             "scheduledFor" to reminderTimestamp
         )
 
-        // Create reminder notification for renter
         val renterReminder = hashMapOf(
             "userId" to rental["requestedById"],
             "title" to "Return Reminder",
@@ -168,7 +163,6 @@ class ContactBottomSheet : BottomSheetDialogFragment() {
             "scheduledFor" to reminderTimestamp
         )
 
-        // Store both reminders
         val db = FirebaseFirestore.getInstance()
         db.collection("scheduledNotifications").add(ownerReminder)
         db.collection("scheduledNotifications").add(renterReminder)

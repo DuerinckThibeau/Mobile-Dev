@@ -33,7 +33,6 @@ class ItemDetailActivity : AppCompatActivity() {
 
         db = FirebaseFirestore.getInstance()
         
-        // Initialize OSMDroid
         Configuration.getInstance().userAgentValue = packageName
         mapView = findViewById(R.id.mapView)
         mapView.setTileSource(TileSourceFactory.MAPNIK)
@@ -52,7 +51,6 @@ class ItemDetailActivity : AppCompatActivity() {
             .get()
             .addOnSuccessListener { document ->
                 if (document != null) {
-                    // Load item details
                     findViewById<TextView>(R.id.itemTitle).text = document.getString("title")
                     findViewById<TextView>(R.id.descriptionText).text = document.getString("description")
                     findViewById<TextView>(R.id.categoryLabel).text = document.getString("category")
@@ -61,7 +59,6 @@ class ItemDetailActivity : AppCompatActivity() {
                     val city = location?.get("city") as? String
                     findViewById<TextView>(R.id.locationText).text = "$city"
 
-                    // Load item image
                     val imageUrl = document.getString("imageUrl")
                     if (!imageUrl.isNullOrEmpty()) {
                         Glide.with(this)
@@ -69,7 +66,6 @@ class ItemDetailActivity : AppCompatActivity() {
                             .into(findViewById(R.id.itemImage))
                     }
 
-                    // Load user details
                     val createdBy = document.getString("createdBy") ?: ""
                     val createdByProfilePic = document.getString("createdByProfilePic") ?: ""
                     
@@ -82,13 +78,11 @@ class ItemDetailActivity : AppCompatActivity() {
                             .into(findViewById<CircleImageView>(R.id.userImage))
                     }
 
-                    // Setup contact button
                     findViewById<Button>(R.id.contactButton).setOnClickListener {
                         ContactBottomSheet.newInstance(createdBy, document.id)
                             .show(supportFragmentManager, "ContactBottomSheet")
                     }
 
-                    // Setup map
                     val geoPoint = location?.get("geopoint") as? com.google.firebase.firestore.GeoPoint
                     if (geoPoint != null) {
                         setupMap(geoPoint.latitude, geoPoint.longitude)
@@ -97,7 +91,6 @@ class ItemDetailActivity : AppCompatActivity() {
                     val price = document.getString("price") ?: "0"
                     findViewById<TextView>(R.id.itemPrice).text = "€${price}/day"
 
-                    // Get the owner's ID and load their rating
                     val ownerId = document.getString("createdById") ?: ""
                     if (ownerId.isNotEmpty()) {
                         loadUserRating(ownerId)
@@ -112,13 +105,11 @@ class ItemDetailActivity : AppCompatActivity() {
         val startPoint = GeoPoint(latitude, longitude)
         mapController.setCenter(startPoint)
 
-        // Create a circle overlay instead of a marker
       val circle = CircleOverlay().apply {
     position = startPoint
-    fillColor = Color.argb(80, 0, 50, 150)  // Even darker semi-transparent blue
-    strokeColor = Color.argb(130, 0, 70, 170)  // Even darker stroke blue
-    strokeWidth = 2f
-    radius = 300.0  // Radius in meters (adjust as needed)
+    fillColor = Color.argb(80, 0, 50, 150)
+    strokeColor = Color.argb(130, 0, 70, 170)
+    radius = 300.0 
 }
         
         mapView.overlays.add(circle)

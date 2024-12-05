@@ -53,7 +53,6 @@ class LoginActivity : AppCompatActivity() {
             passwordInput.setSelection(passwordInput.text.length)
         }
 
-        // Check if user is already signed in
         val currentUser = auth.currentUser
         if (currentUser != null) {
             startHomeActivity()
@@ -109,12 +108,10 @@ class LoginActivity : AppCompatActivity() {
                 .get()
                 .addOnSuccessListener { document ->
                     if (document.exists()) {
-                        // User has completed profile setup, go to home
                         val intent = Intent(this, HomeActivity::class.java)
                         startActivity(intent)
                         finish()
                     } else {
-                        // User needs to complete profile setup
                         val intent = Intent(this, ProfileSetupActivity::class.java)
                         startActivity(intent)
                         finish()

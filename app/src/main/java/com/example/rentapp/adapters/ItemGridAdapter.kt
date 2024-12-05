@@ -38,7 +38,6 @@ class ItemGridAdapter(private val items: List<Item>) :
         holder.description.text = item.description
         holder.userName.text = item.createdBy
         
-        // Set price text
         holder.price.text = if (item.price == "0") "FREE" else "€${item.price}"
 
         if (item.imageUrl.isNotEmpty()) {
@@ -53,7 +52,6 @@ class ItemGridAdapter(private val items: List<Item>) :
                 .into(holder.userImage)
         }
 
-        // Set click listener
         holder.itemView.setOnClickListener {
             val intent = Intent(holder.itemView.context, ItemDetailActivity::class.java)
             intent.putExtra("itemId", item.id)

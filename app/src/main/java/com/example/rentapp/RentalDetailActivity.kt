@@ -31,7 +31,6 @@ class RentalDetailActivity : AppCompatActivity() {
 
         db = FirebaseFirestore.getInstance()
         
-        // Initialize OSMDroid
         Configuration.getInstance().userAgentValue = packageName
         mapView = findViewById(R.id.mapView)
         mapView.setTileSource(TileSourceFactory.MAPNIK)
@@ -39,7 +38,6 @@ class RentalDetailActivity : AppCompatActivity() {
         val rentalId = intent.getStringExtra("rentalId") ?: return
         val isOwner = intent.getBooleanExtra("isOwner", false)
         
-        // Add back button functionality
         findViewById<ImageButton>(R.id.backButton).setOnClickListener {
             finish()
         }
@@ -54,13 +52,11 @@ class RentalDetailActivity : AppCompatActivity() {
             .get()
             .addOnSuccessListener { rentalDoc ->
                 if (rentalDoc != null) {
-                    // Load basic rental info
                     findViewById<TextView>(R.id.itemTitle).text = rentalDoc.getString("itemTitle")
                     findViewById<TextView>(R.id.dateRange).text = 
                         "${rentalDoc.getString("startDate")} - ${rentalDoc.getString("endDate")}"
                     findViewById<TextView>(R.id.message).text = rentalDoc.getString("message")
                     
-                    // Load item image
                     val imageUrl = rentalDoc.getString("itemImage")
                     if (!imageUrl.isNullOrEmpty()) {
                         Glide.with(this)
@@ -72,15 +68,12 @@ class RentalDetailActivity : AppCompatActivity() {
                     val ownerId = rentalDoc.getString("ownerId")
                     
                     if (currentUserId == ownerId) {
-                        // Current user is the owner, show renter's info
                         val renterId = rentalDoc.getString("requestedById")
                         loadUserDetails(renterId ?: "", true)
                     } else {
-                        // Current user is the renter, show owner's info
                         loadUserDetails(ownerId ?: "", false)
                     }
 
-                    // Only show confirm return button if current user is the owner AND rental is accepted
                     if (currentUserId == ownerId && rentalDoc.getString("status") == "ACCEPTED") {
                         confirmReturnButton.visibility = View.VISIBLE
                         confirmReturnButton.setOnClickListener {
@@ -103,7 +96,6 @@ class RentalDetailActivity : AppCompatActivity() {
                     val profilePic = document.getString("profilepicture") ?: ""
                     val address = document.get("address") as? Map<*, *>
                     
-                    // Set user info
                     findViewById<TextView>(R.id.userName).text = "$firstName $lastName"
                     findViewById<TextView>(R.id.userRole).text = if (isOwner) "Renter" else "Owner"
                     
@@ -114,7 +106,6 @@ class RentalDetailActivity : AppCompatActivity() {
                             .into(findViewById<CircleImageView>(R.id.userImage))
                     }
 
-                    // Setup address and map
                     val geoPoint = address?.get("geopoint") as? com.google.firebase.firestore.GeoPoint
                     if (geoPoint != null) {
                         setupMap(geoPoint.latitude, geoPoint.longitude)
@@ -154,7 +145,6 @@ class RentalDetailActivity : AppCompatActivity() {
             .setNegativeButton("CANCEL", null)
             .show()
 
-        // Set text colors
         dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.WHITE)
         dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(Color.WHITE)
     }
@@ -166,10 +156,8 @@ class RentalDetailActivity : AppCompatActivity() {
                 val renterId = rentalDoc.getString("requestedById")
                 val itemTitle = rentalDoc.getString("itemTitle")
                 
-                // Update status to completed
                 rentalDoc.reference.update("status", "COMPLETED")
                     .addOnSuccessListener {
-                        // Send notification to renter
                         val notification = hashMapOf(
                             "userId" to renterId,
                             "title" to "Item Return Confirmed",

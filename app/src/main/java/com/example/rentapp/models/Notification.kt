@@ -8,6 +8,5 @@ data class Notification(
     val timestamp: Long = 0,
     val read: Boolean = false
 ) {
-    // Required empty constructor for Firestore
     constructor() : this("", "", "", "", 0, false)
 } 

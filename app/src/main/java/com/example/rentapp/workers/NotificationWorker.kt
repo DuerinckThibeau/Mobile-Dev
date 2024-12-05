@@ -10,13 +10,11 @@ class NotificationWorker(context: Context, params: WorkerParameters) : Worker(co
         val db = FirebaseFirestore.getInstance()
         val currentTime = System.currentTimeMillis()
 
-        // Get all scheduled notifications that should be sent
         db.collection("scheduledNotifications")
             .whereLessThanOrEqualTo("scheduledFor", currentTime)
             .get()
             .addOnSuccessListener { documents ->
                 for (doc in documents) {
-                    // Move to regular notifications collection
                     val notification = hashMapOf(
                         "userId" to doc.getString("userId"),
                         "title" to doc.getString("title"),
@@ -27,7 +25,6 @@ class NotificationWorker(context: Context, params: WorkerParameters) : Worker(co
 
                     db.collection("notifications").add(notification)
                         .addOnSuccessListener {
-                            // Delete the scheduled notification
                             doc.reference.delete()
                         }
                 }

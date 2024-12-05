@@ -52,7 +52,6 @@ class HomeActivity : AppCompatActivity() {
             startActivity(Intent(this, NotificationsActivity::class.java))
         }
 
-        // Load unread notifications count
         auth.currentUser?.let { user ->
             db.collection("notifications")
                 .whereEqualTo("userId", user.uid)
@@ -130,6 +129,6 @@ class HomeActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        setupViews() // Refresh notification count when returning to the activity
+        setupViews()
     }
 } 
